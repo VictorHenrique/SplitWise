@@ -7,9 +7,9 @@ const LoginScreen = ({navigation, accounts}) => {
     const [password, setPassword] = useState('');
 
     const handleLogin = () => { if (accounts[username] === password) {
-            navigation.navigate('Home');
+            navigation.navigate('Home', {username});
         } else {
-            alert('deu ruim');
+            alert('Usuario e/ou senha invalido');
         }
     }
 
