@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRoute } from '@react-navigation/native';
 import { View, Text, TextInput, Button } from 'react-native';
-import { TouchableOpacity } from "react-native-web";
+import { TouchableOpacity } from "react-native";
 import { Fontisto } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import styles from '../styles.js'

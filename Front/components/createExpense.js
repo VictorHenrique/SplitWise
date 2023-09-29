@@ -3,6 +3,7 @@ import { View, Text, Button, Switch } from 'react-native';
 import styles from '../styles.js'
 import { TextInput } from "react-native-gesture-handler";
 import {v4 as uuidv4 } from 'uuid';
+import { ScrollView } from "react-native";
 
 const CreateExpenseScreen = ({route, navigation}) => {
     const { groupName, groupMembers, addExpense } = route.params;
@@ -76,18 +77,36 @@ const CreateExpenseScreen = ({route, navigation}) => {
         }
     };
 
+    const percentageLabelStyle = {
+        marginRight: 5,
+        color: isRawValue ? 'gray' : 'black',
+    };
+
+    const rawValueLabelStyle = {
+        marginLeft: 5,
+        color: isRawValue ? 'black' : 'gray',
+    };
+
     return (
-        <View style={styles.containerHome}>
+        <ScrollView style={styles.containerHome}>
             <Text style={styles.label}>Criar Nova Despesa em {groupName}</Text>
             <Text>Nome da Despesa:</Text>
             <TextInput value={expenseName} onChangeText={(text) => setExpenseName(text)} style={styles.inputCreateGroup}/>
             <Text>Valor da Despesa:</Text>
             <TextInput value={expenseAmount} onChangeText={(text) => setExpenseAmount(text)} style={styles.inputCreateGroup} keyboardType="numeric"/>
-            <Text>Valores em:</Text>
-            <Switch
-                value={isRawValue}
-                onValueChange={(value) => setIsRawValue(value)}
-            />
+            <Text style={styles.label}>Valores em:</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Text style={percentageLabelStyle}>
+                    {isRawValue ? '' : 'Porcentagem'}
+                </Text>
+                <Switch
+                    value={isRawValue}
+                    onValueChange={(value) => setIsRawValue(value)}
+                />
+                <Text style={rawValueLabelStyle}>
+                    {isRawValue ? 'Bruto' : ''}
+                </Text>
+            </View>
             <Text style={styles.label}>Membros Envolvidos:</Text>
             {groupMembers.map((member) => (
                 <View key={member}>
@@ -106,7 +125,7 @@ const CreateExpenseScreen = ({route, navigation}) => {
                 </View>
             ))}
             <Button title="Criar Despesa" onPress={handleSubmit}/>
-        </View>
+        </ScrollView>
     )
 }
 

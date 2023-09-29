@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native';
 import styles from '../styles.js'
 import { useRoute } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useState } from 'react';
 

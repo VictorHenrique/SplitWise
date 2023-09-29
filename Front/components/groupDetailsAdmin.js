@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GroupDetailsAdminScreen = ({route, navigation}) => {
     const { groupName, deleteGroup, groupMembers, username } = route.params;
-    const [expenses, setExpenses] = useState([]);
+    const [groupExpenses, setGroupExpenses] = useState([]);
     const [userExpenses, setUserExpenses] = useState([]);
     const [isExpenseOpen, setIsExpenseOpen] = useState({});
 
@@ -16,10 +16,14 @@ const GroupDetailsAdminScreen = ({route, navigation}) => {
             try {
                 // Recupera as despesas do AsyncStorage quando a tela é montada
                 const expensesJSON = await AsyncStorage.getItem('expenses');
-                const expenses = expensesJSON ? JSON.parse(expensesJSON) : [];
+                const expenses = expensesJSON ? JSON.parse(expensesJSON) : {};
+
+                console.log('expenses')
+                console.log(expenses[groupName])
+                console.log('groupName',groupName);
 
                 // Define as despesas no estado local
-                setExpenses(expenses);
+                setGroupExpenses(expenses[groupName] || []);
             } catch (error) {
                 console.error('Erro ao obter despesas do AsyncStorage: ', error);
             }
@@ -27,28 +31,28 @@ const GroupDetailsAdminScreen = ({route, navigation}) => {
 
         // Chama a função para buscar despesas quando a tela for montada
         fetchExpenses();
-    }, []);
+    }, [groupName]);
 
     useEffect(() => {
-        setUserExpenses(expenses);
-    }, [expenses]);
+        setUserExpenses(groupExpenses);
+    }, [groupExpenses]);
 
     const calculateTotalExpenses = () => {
         let total = 0;
-        expenses.forEach((expense) => {
+        groupExpenses.forEach((expense) => {
             total += expense.amount;
         });
         return total;
     }
 
     const handleToggleExpenses = () => {
-        if (userExpenses.length === expenses.length) {
-            const filteredExpenses = expenses.filter((expense) => {
+        if (userExpenses.length === groupExpenses.length) {
+            const filteredExpenses = groupExpenses.filter((expense) => {
                 return expense.members.includes(username);
             });
             setUserExpenses(filteredExpenses);
         } else {
-            setUserExpenses(expenses);
+            setUserExpenses(groupExpenses);
         }
     }
 
@@ -68,13 +72,26 @@ const GroupDetailsAdminScreen = ({route, navigation}) => {
         try {
             // Obtém as despesas atuais do AsyncStorage (se houver)
             const existingExpensesJSON = await AsyncStorage.getItem('expenses');
-            const existingExpenses = existingExpensesJSON ? JSON.parse(existingExpensesJSON) : [];
+            let existingExpenses = existingExpensesJSON ? JSON.parse(existingExpensesJSON) : {};
 
-            // Adiciona a nova despesa à lista de despesas
-            existingExpenses.push(newExpense);
+            // Certifique-se de que groupName não seja nulo ou indefinido
+            if (!groupName) {
+                console.error('Nome do grupo inválido');
+                return;
+            }
+
+            // Certifique-se de que groupName está definido como uma chave válida
+            if (!existingExpenses[groupName]) {
+                existingExpenses[groupName] = [];
+            }
+
+            // Adiciona a nova despesa à lista de despesas do grupo
+            existingExpenses[groupName].push(newExpense);
 
             // Salva a lista atualizada de despesas no AsyncStorage
             await AsyncStorage.setItem('expenses', JSON.stringify(existingExpenses));
+
+            console.log(existingExpenses);
 
             // Volta para a tela anterior
             navigation.goBack();
@@ -95,9 +112,9 @@ const GroupDetailsAdminScreen = ({route, navigation}) => {
                 title="Adicionar Despesa"
                 onPress={() =>
                     navigation.navigate('CreateExpense', {
-                        groupName,
-                        groupMembers,
-                        addExpense,
+                        groupName: groupName,
+                        groupMembers: groupMembers,
+                        addExpense: addExpense,
                     })
                 }
             />
