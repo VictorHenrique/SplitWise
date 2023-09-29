@@ -1,16 +1,12 @@
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { View, Text, Button } from 'react-native';
-import { Fontisto } from '@expo/vector-icons';
 import styles from '../styles.js'
 import React, { useState, useEffect } from 'react';
 
-const GroupDetailsAdminScreen = ({route, navigation}) => {
+const GroupDetailsScreen = ({route, navigation}) => {
     const { groupName, deleteGroup, groupMembers, username } = route.params;
     const [expenses, setExpenses] = useState([]);
     const [userExpenses, setUserExpenses] = useState([]);
     const [isExpenseOpen, setIsExpenseOpen] = useState({});
-
-    // TODO we need to set localStorage for the expenses
 
     useEffect(() => {
         setUserExpenses(expenses);
@@ -55,9 +51,6 @@ const GroupDetailsAdminScreen = ({route, navigation}) => {
         <View style={styles.containerHome}>
             <View style={styles.groupHeader}>
                 <Text style={styles.label}>Detalhes do Grupo: {groupName}</Text>
-                <TouchableOpacity onPress={handleDeleteGroup}>
-                    <Fontisto name="trash" size={24} color="black" style={styles.removeMemberButton}/>
-                </TouchableOpacity>
             </View>
             <Button
                 title="Adicionar Despesa"
@@ -102,5 +95,5 @@ const GroupDetailsAdminScreen = ({route, navigation}) => {
     )
 };
 
-export default GroupDetailsAdminScreen;
+export default GroupDetailsScreen;
 

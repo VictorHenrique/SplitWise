@@ -6,6 +6,8 @@ import RegisterScreen from './components/register.js';
 import { createStackNavigator } from '@react-navigation/stack';
 import CreateGroupScreen from './components/createGroup.js';
 import GroupDetailsAdminScreen from './components/groupDetailsAdmin.js';
+import CreateExpenseScreen from './components/createExpense.js';
+import GroupDetailsScreen from './components/groupDetails.js';
 
 const Stack = createStackNavigator();
 
@@ -31,6 +33,12 @@ const App = () => {
                 </Stack.Screen>
                 <Stack.Screen name='GroupDetailsAdmin'>
                     {(props) => <GroupDetailsAdminScreen{...props}/>}
+                </Stack.Screen>
+                <Stack.Screen name='GroupDetails'>
+                    {(props) => <GroupDetailsScreen{...props}/>}
+                </Stack.Screen>
+                <Stack.Screen name='CreateExpense'>
+                    {(props) => <CreateExpenseScreen{...props}/>}
                 </Stack.Screen>
                 <Stack.Screen name='Register'>
                     {(props) => <RegisterScreen{...props} accounts={accounts} setAccounts={setAccounts}/>}

@@ -93,6 +93,11 @@ const styles = StyleSheet.create({
   addMemberButton: {
     fontSize: 20,
   },
+  groupHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
 });
 
 export default styles;

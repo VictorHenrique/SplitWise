@@ -31,9 +31,9 @@ const HomeScreen = ({navigation}) => {
         const lastIndex = group.length - 1;
         const owner = group[lastIndex];
         if (owner === username) {
-            navigation.navigate('GroupDetailsAdmin', {groupName: groupName, deleteGroup: deleteGroup})
+            navigation.navigate('GroupDetailsAdmin', {groupName: groupName, deleteGroup: deleteGroup, groupMembers: group, username: username})
         } else {
-            navigation.navigate('GroupDetails', {groupName: groupName, deleteGroup: deleteGroup})
+            navigation.navigate('GroupDetails', {groupName: groupName, deleteGroup: deleteGroup, groupMembers: group, username: username})
         }
     };
 
