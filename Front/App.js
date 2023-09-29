@@ -8,6 +8,7 @@ import CreateGroupScreen from './components/createGroup.js';
 import GroupDetailsAdminScreen from './components/groupDetailsAdmin.js';
 import CreateExpenseScreen from './components/createExpense.js';
 import GroupDetailsScreen from './components/groupDetails.js';
+import ProfileScreen from './components/profile.js';
 
 const Stack = createStackNavigator();
 
@@ -39,6 +40,9 @@ const App = () => {
                 </Stack.Screen>
                 <Stack.Screen name='CreateExpense'>
                     {(props) => <CreateExpenseScreen{...props}/>}
+                </Stack.Screen>
+                <Stack.Screen name='Profile'>
+                    {(props) => <ProfileScreen{...props}/>}
                 </Stack.Screen>
                 <Stack.Screen name='Register'>
                     {(props) => <RegisterScreen{...props} accounts={accounts} setAccounts={setAccounts}/>}

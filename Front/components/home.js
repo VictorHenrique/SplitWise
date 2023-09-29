@@ -37,13 +37,19 @@ const HomeScreen = ({navigation}) => {
         }
     };
 
+    const handleProfilePress = () => {
+        navigation.navigate('Profile');
+    }
+
     return (
         <View style={styles.containerHome}>
             <View style={styles.header}>
-                <View style={styles.profile}>
-                    <FontAwesome name="user-circle" size={32} color="gray" style={styles.profileIcon}/>
-                    <Text style={styles.username}>Hello, {username}</Text>
-                </View>
+                <TouchableOpacity onPress={handleProfilePress}>
+                    <View style={styles.profile}>
+                        <FontAwesome name="user-circle" size={32} color="gray" style={styles.profileIcon}/>
+                        <Text style={styles.username}>Hello, {username}</Text>
+                    </View>
+                </TouchableOpacity>
             </View>
 
             <View style={styles.groupList}>

@@ -1,6 +1,7 @@
 import { View, Text, Button } from 'react-native';
 import styles from '../styles.js'
 import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GroupDetailsScreen = ({route, navigation}) => {
     const { groupName, deleteGroup, groupMembers, username } = route.params;
@@ -11,6 +12,24 @@ const GroupDetailsScreen = ({route, navigation}) => {
     useEffect(() => {
         setUserExpenses(expenses);
     }, [expenses]);
+
+    useEffect(() => {
+        const fetchExpenses = async () => {
+            try {
+                // Recupera as despesas do AsyncStorage quando a tela é montada
+                const expensesJSON = await AsyncStorage.getItem('expenses');
+                const expenses = expensesJSON ? JSON.parse(expensesJSON) : [];
+
+                // Define as despesas no estado local
+                setExpenses(expenses);
+            } catch (error) {
+                console.error('Erro ao obter despesas do AsyncStorage: ', error);
+            }
+        };
+
+        // Chama a função para buscar despesas quando a tela for montada
+        fetchExpenses();
+    }, []);
 
     const calculateTotalExpenses = () => {
         let total = 0;
@@ -38,14 +57,24 @@ const GroupDetailsScreen = ({route, navigation}) => {
         return 0;
     }
 
-    const handleDeleteGroup = () => {
-        deleteGroup(groupName);
-        navigation.goBack();
-    }
+    const addExpense = async (newExpense) => {
+        try {
+            // Obtém as despesas atuais do AsyncStorage (se houver)
+            const existingExpensesJSON = await AsyncStorage.getItem('expenses');
+            const existingExpenses = existingExpensesJSON ? JSON.parse(existingExpensesJSON) : [];
 
-    const addExpense = (newExpense) => {
-        setExpenses([...expenses, newExpense]);
-    }
+            // Adiciona a nova despesa à lista de despesas
+            existingExpenses.push(newExpense);
+
+            // Salva a lista atualizada de despesas no AsyncStorage
+            await AsyncStorage.setItem('expenses', JSON.stringify(existingExpenses));
+
+            // Volta para a tela anterior
+            navigation.goBack();
+        } catch (error) {
+            console.error('Erro ao salvar despesas: ', error);
+        }
+    };
 
     return (
         <View style={styles.containerHome}>
