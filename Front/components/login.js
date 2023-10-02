@@ -35,7 +35,7 @@ const LoginScreen = ({navigation, accounts}) => {
     return (
         <View style={styles.container}>
             <View style={{flex: 1, width: "100%", justifyContent: 'center', alignItems: 'center'}}>
-                <View style={{width: 300, height: 200}}>
+                <View style={{width: 300, height: 150}}>
                     <SvgUri
                         width="100%"
                         height="100%"

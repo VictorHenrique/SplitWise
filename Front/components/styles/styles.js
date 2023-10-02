@@ -14,6 +14,12 @@ const styles = StyleSheet.create({
       flex: 1,
       padding: 16,
   },
+  headerStyle: {
+    backgroundColor: theme.md_sys_color_background,
+    borderWidth:0,
+    elevation: 0, // remove shadow on Android
+    shadowOpacity: 0, // remove shadow on iOS
+  },
   label: {
     fontSize: 18,
     marginBottom: 8,

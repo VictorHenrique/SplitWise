@@ -21,12 +21,7 @@ const App = () => {
             <Stack.Navigator  initialRouteName='Login'>
                 <Stack.Screen options={{
                     title: "",
-                    headerStyle: {
-                        backgroundColor: theme.md_sys_color_background,
-                        borderWidth:0,
-                        elevation: 0, // remove shadow on Android
-                        shadowOpacity: 0, // remove shadow on iOS
-                    }
+                    headerShown: false, 
                 }} name='Login'>
                     {(props) => <LoginScreen{...props} accounts={accounts}/>}
                 </Stack.Screen>
