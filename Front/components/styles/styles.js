@@ -20,12 +20,6 @@ const styles = StyleSheet.create({
     elevation: 0, // remove shadow on Android
     shadowOpacity: 0, // remove shadow on iOS
   },
-  label: {
-    fontSize: 18,
-    marginBottom: 8,
-    color: theme.md_sys_color_on_background,
-    // fontFamily: 'Roboto',
-  },
   input: {
     flex: 1,
     paddingLeft: 10,
@@ -36,7 +30,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderRadius: 5,
-    borderColor: theme.md_sys_color_on_secondary_container,
+    // borderColor: theme.md_sys_color_on_secondary_container,
     flexDirection: 'row',
     marginTop: 20,
     padding: 10,

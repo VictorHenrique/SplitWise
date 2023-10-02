@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Image, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import styles from './styles/styles.js';
+import theme from './styles/theme.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import typography from './styles/typography.js';
-import colors from './styles/tokens.js';
-import { AntDesign } from '@expo/vector-icons';
 import { SvgUri } from 'react-native-svg';
-
+import TextField from './TextField.tsx';
 
 const LoginScreen = ({navigation, accounts}) => {
     const [username, setUsername] = useState('');
@@ -28,50 +26,32 @@ const LoginScreen = ({navigation, accounts}) => {
         } else {
             alert('Usuario e/ou senha invalido');
         }
-    }
+    };
 
-    const logo = require('./../assets/images/logo.svg');
+    const logoStyle = {width: 300, height: 200};
 
     return (
         <View style={styles.container}>
             <View style={{flex: 1, width: "100%", justifyContent: 'center', alignItems: 'center'}}>
-                <View style={{width: 300, height: 150}}>
+                <View style={logoStyle}>
                     <SvgUri
                         width="100%"
                         height="100%"
                         uri="http://thenewcode.com/assets/images/thumbnails/homer-simpson.svg"
                     />
                 </View>
-                <View style={styles.inputContainer}>
-                    <View style={styles.iconContainer}>
-                        <AntDesign name='mail' size={24} color={colors.md_sys_color_on_background_dark}/>
-                    </View>
-                    
-                    <TextInput
-                        style={[styles.input]}
-                        onChangeText={(text) => setUsername(text)}
-                        value={username}
-                    />
-                </View>
-                <View style={styles.inputContainer}>
-                    <View style={styles.iconContainer}>
-                        <AntDesign name='lock1' size={26} color={colors.md_sys_color_on_background_dark}/>
-                    </View>
-                    
-                    <TextInput
-                        style={[styles.input]}
-                        onChangeText={(text) => setPassword(text)}
-                        value={password}
-                        secureTextEntry={true}
-                    />
-                </View>
+
+                <TextField value={username} iconName='mail' iconSize={24} label='Email' onChangeText={(text) => setUsername(text)}/>
+                <TextField value={password} iconName='lock1' iconSize={26} label='Password' onChangeText={(text) => setPassword(text)} secureTextEntry={true} />
+
                 <Pressable style={styles.button} onPress={handleLogin}>
-                    <Text style={{"fontFamily": "Roboto", "color": colors.md_sys_color_on_primary_container}}>Login</Text>
+                    <Text style={{"fontFamily": "Roboto", "color": theme.md_sys_color_on_prime}}>Login</Text>
                 </Pressable>
             </View>
+            
             <View style={{height: 50}}>
                 <Text style={{color: "white"}}>Don't have an account?  
-                    <Text style={{"color": colors.md_sys_color_on_tertiary_container_dark}} onPress={() => navigation.navigate('Register')}> Create here</Text>
+                    <Text value={password} style={{"color": theme.md_sys_color_on_tertiary_container}} onPress={() => navigation.navigate('Register')}> Create here</Text>
                 </Text>
             </View>
         </View>
