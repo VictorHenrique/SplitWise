@@ -4,7 +4,7 @@ import { View, Text, TextInput, Button } from 'react-native';
 import { TouchableOpacity } from "react-native";
 import { Fontisto } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-import styles from '../styles.js'
+import styles from './styles/styles.js';
 
 const CreateGroupScreen = ({navigation}) => {
     const route = useRoute();

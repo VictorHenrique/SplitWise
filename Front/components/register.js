@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
-import styles from '../styles.js'
+import styles from './styles/styles.js';
 
 const RegisterScreen = ({navigation, accounts, setAccounts}) => {
     const [username, setUsername] = useState('')
@@ -14,7 +14,7 @@ const RegisterScreen = ({navigation, accounts, setAccounts}) => {
             setAccounts({...accounts, [username]: password});
             navigation.navigate('Login')
         } else {
-            alert('Campos invalidos')
+            alert('Campos invailidos')
         }
     }
 

@@ -1,7 +1,7 @@
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { View, Text, Button } from 'react-native';
 import { Fontisto } from '@expo/vector-icons';
-import styles from '../styles.js'
+import styles from './styles/styles.js';
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native';
-import styles from '../styles.js'
+import styles from './styles/styles.js';
+import typography from './styles/typography.js';
 import { useRoute } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, Text, Button, Switch } from 'react-native';
-import styles from '../styles.js'
+import styles from './styles/styles.js';
 import { TextInput } from "react-native-gesture-handler";
 import {v4 as uuidv4 } from 'uuid';
 import { ScrollView } from "react-native";

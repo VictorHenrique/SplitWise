@@ -9,6 +9,7 @@ import GroupDetailsAdminScreen from './components/groupDetailsAdmin.js';
 import CreateExpenseScreen from './components/createExpense.js';
 import GroupDetailsScreen from './components/groupDetails.js';
 import ProfileScreen from './components/profile.js';
+import theme from './components/styles/theme.js';
 
 const Stack = createStackNavigator();
 
@@ -17,8 +18,16 @@ const App = () => {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName='Login'>
-                <Stack.Screen name='Login'>
+            <Stack.Navigator  initialRouteName='Login'>
+                <Stack.Screen options={{
+                    title: "",
+                    headerStyle: {
+                        backgroundColor: theme.md_sys_color_background,
+                        borderWidth:0,
+                        elevation: 0, // remove shadow on Android
+                        shadowOpacity: 0, // remove shadow on iOS
+                    }
+                }} name='Login'>
                     {(props) => <LoginScreen{...props} accounts={accounts}/>}
                 </Stack.Screen>
                 <Stack.Screen
