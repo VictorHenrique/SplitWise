@@ -11,8 +11,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.md_sys_color_background,
   },
   containerHome: {
-      flex: 1,
-      padding: 16,
+    flex: 1,
+    padding: 16,
+    backgroundColor: theme.md_sys_color_background,
   },
   headerStyle: {
     backgroundColor: theme.md_sys_color_background,
@@ -59,6 +60,14 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'flex-start',
+    marginTop: 48,
+  },
+  membersListHeader: {
+    marginTop: 48,
+    fontSize: 24,
+    fontWeight: 'bold',
+    fontFamily: "Roboto",
+    color: theme.md_sys_color_secondary,
   },
   profile: {
     flexDirection: 'row',
@@ -66,10 +75,12 @@ const styles = StyleSheet.create({
   },
   profileIcon: {
     marginRight: 8,
+    color: theme.md_sys_color_secondary,
   },
   username: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
+    color: theme.md_sys_color_secondary,
   },
   groupList: {
     marginTop: 16,
@@ -87,10 +98,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   createGroupButton: {
-    backgroundColor: 'green',
-    padding: 12,
-    borderRadius: 8,
+    backgroundColor: theme.md_sys_color_tertiary,
+    padding: 15,
+    borderRadius: 10,
     alignItems: 'center',
+    width: "100%",
+    marginTop: 10,
   },
   createGroupButtonText: {
     color: 'white',
@@ -100,11 +113,16 @@ const styles = StyleSheet.create({
   membersList: {
     marginTop: 8,
   },
+  memberName: {
+      fontSize: 18,
+      color: theme.md_sys_color_secondary,
+  },
   memberItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 8,
+    color: theme.md_sys_color_secondary,
   },
   removeMemberButton: {
     fontSize: 20,
@@ -116,13 +134,72 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   addMemberButton: {
-    fontSize: 20,
+    fontSize: 48,
   },
   groupHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginTop: 48,
   },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    fontFamily: "Roboto",
+    color: theme.md_sys_color_primary,
+  },
+  groupButtonHome: {
+    marginTop: 10,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    // borderWidth: 1,
+    backgroundColor: theme.md_sys_color_primary,
+    borderRadius: 10,
+    padding: 15,
+  },
+  groupExpensesTitle: {
+    marginTop: 24,
+    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: 'bold',
+    fontFamily: "Roboto",
+    color: theme.md_sys_color_secondary,
+  },
+  noExpenses: {
+    color: theme.md_sys_color_error,
+    fontSize: 20,
+  },
+  totalGroupExpenses: {
+    color: theme.md_sys_color_tertiary,
+    fontSize: 20,
+    marginTop: 30,
+    fontWeight: 'bold',
+  },
+  expenseDetailButton: {
+    backgroundColor: theme.md_sys_color_secondary,
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: "100%",
+    marginTop: 10,
+  },
+  titleExpense: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 5,
+    marginBottom: 5,
+    fontFamily: "Roboto",
+    color: theme.md_sys_color_tertiary,
+  },
+  fieldExpense: {
+    fontSize: 18,
+    marginBottom: 5,
+    fontFamily: "Roboto",
+    color: theme.md_sys_color_tertiary,
+  }
 });
 
 export default styles;

@@ -41,16 +41,31 @@ const LoginScreen = ({navigation, accounts}) => {
                     />
                 </View>
 
-                <TextField value={username} iconName='mail' iconSize={24} label='Email' onChangeText={(text) => setUsername(text)}/>
-                <TextField value={password} iconName='lock1' iconSize={26} label='Password' onChangeText={(text) => setPassword(text)} secureTextEntry={true} />
+                <TextField
+                    value={username}
+                    iconName='mail'
+                    iconSize={24}
+                    label='Email'
+                    onChangeText={(text) => setUsername(text)}
+                />
+                <TextField
+                    value={password}
+                    iconName='lock1'
+                    iconSize={26}
+                    label='Password'
+                    onChangeText={(text) => setPassword(text)}
+                    secureTextEntry={true}
+                />
 
                 <Pressable style={styles.button} onPress={handleLogin}>
-                    <Text style={{"fontFamily": "Roboto", "color": theme.md_sys_color_on_prime}}>Login</Text>
+                    <Text style={{"fontFamily": "Roboto", "color": theme.md_sys_color_on_prime}}>
+                        Login
+                    </Text>
                 </Pressable>
             </View>
-            
+
             <View style={{height: 50}}>
-                <Text style={{color: "white"}}>Don't have an account?  
+                <Text style={{color: "white"}}>Don't have an account?
                     <Text value={password} style={{"color": theme.md_sys_color_on_tertiary_container}} onPress={() => navigation.navigate('Register')}> Create here</Text>
                 </Text>
             </View>

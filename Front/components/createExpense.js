@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, Text, Button, Switch } from 'react-native';
 import styles from './styles/styles.js';
 import { TextInput } from "react-native-gesture-handler";
+import TextField from './TextField.tsx';
 import {v4 as uuidv4 } from 'uuid';
 import { ScrollView } from "react-native";
 
@@ -89,12 +90,25 @@ const CreateExpenseScreen = ({route, navigation}) => {
 
     return (
         <ScrollView style={styles.containerHome}>
-            <Text style={styles.label}>Criar Nova Despesa em {groupName}</Text>
-            <Text>Nome da Despesa:</Text>
-            <TextInput value={expenseName} onChangeText={(text) => setExpenseName(text)} style={styles.inputCreateGroup}/>
-            <Text>Valor da Despesa:</Text>
-            <TextInput value={expenseAmount} onChangeText={(text) => setExpenseAmount(text)} style={styles.inputCreateGroup} keyboardType="numeric"/>
-            <Text style={styles.label}>Valores em:</Text>
+            <View style={styles.groupHeader}>
+                <Text style={styles.title}>Create new expense in {groupName}</Text>
+            </View>
+            <TextField
+                value={expenseName}
+                label='Expense Name'
+                iconName='bank'
+                iconSize={24}
+                onChangeText={(text) => setExpenseName(text)}
+            />
+            <TextField
+                value={expenseAmount}
+                label='Expense Amount'
+                iconName='bank'
+                iconSize={24}
+                onChangeText={(text) => setExpenseAmount(text)}
+                keyboardType="numeric"
+            />
+            <Text style={styles.label}>Values in:</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Text style={percentageLabelStyle}>
                     {isRawValue ? '' : 'Porcentagem'}

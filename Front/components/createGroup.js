@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useRoute } from '@react-navigation/native';
-import { View, Text, TextInput, Button } from 'react-native';
-import { TouchableOpacity } from "react-native";
+import { View, Text, Pressable } from 'react-native';
+import TextField from './TextField.tsx';
+import theme from './styles/theme.js';
 import { Fontisto } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import styles from './styles/styles.js';
@@ -40,39 +41,49 @@ const CreateGroupScreen = ({navigation}) => {
 
     return (
         <View style={styles.containerHome}>
-            <Text>Criar um novo grupo</Text>
-            <TextInput
-                placeholder="Nome do Grupo"
-                value={groupName}
-                onChangeText={(text) => setGroupName(text)}
-                style={styles.inputCreateGroup}
-            />
+            <View style={styles.header}>
+                <Text style={styles.title}>Create a new group</Text>
+                <TextField
+                    value={groupName}
+                    label='Group Name'
+                    iconName='team'
+                    iconSize={24}
+                    onChangeText={(text) => setGroupName(text)}
+                />
+            </View>
 
-            <Text>Integrantes:</Text>
+            <Text style={styles.membersListHeader}>Members:</Text>
+
+            <View style={styles.addMemberContainer}>
+                <TextField
+                    value={newMember}
+                    label='New Member'
+                    iconName='addusergroup'
+                    iconSize={24}
+                    onChangeText={(text) => setNewMember(text)}
+                />
+                <Pressable onPress={addMember}>
+                    <Ionicons name="add-circle-outline" size={24} color={theme.md_sys_color_secondary}/>
+                </Pressable>
+            </View>
+
             <View style={styles.membersList}>
                 {members.map((member, index) => (
                     <View key={index} style={styles.memberItem}>
-                        <Text>{member}</Text>
-                        <TouchableOpacity onPress={() => removeMember(index)}>
-                            <Fontisto name="trash" size={24} color="black" style={styles.removeMemberButton}/>
-                        </TouchableOpacity>
+                        <Text style={styles.memberName}>{member}</Text>
+                        <Pressable onPress={() => removeMember(index)}>
+                            <Fontisto name="trash" size={24} color={theme.md_sys_color_error} style={styles.removeMemberButton}/>
+                        </Pressable>
                     </View>
                 ))}
             </View>
 
-            <View style={styles.addMemberContainer}>
-                <TextInput
-                    placeholder="Novo Integrante"
-                    value={newMember}
-                    onChangeText={(text) => setNewMember(text)}
-                    style={styles.inputCreateGroup}
-                />
-                <TouchableOpacity onPress={addMember}>
-                    <Ionicons name="add-circle-outline" size={24} color="black" style={styles.addMemberButton}/>
-                </TouchableOpacity>
-            </View>
-
-            <Button title="Criar grupo" onPress={handleSubmit}/>
+            <Pressable
+                style={styles.createGroupButton}
+                onPress={handleSubmit}
+            >
+                <Text style={styles.createGroupButtonText}>Create Group</Text>
+            </Pressable>
         </View>
     );
 };

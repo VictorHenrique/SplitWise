@@ -19,37 +19,83 @@ const App = () => {
     return (
         <NavigationContainer>
             <Stack.Navigator  initialRouteName='Login'>
-                <Stack.Screen options={{
-                    title: "",
-                    headerShown: false, 
-                }} name='Login'>
+                <Stack.Screen
+                    options={{
+                        title: "",
+                        headerShown: false,
+                    }}
+                    name='Login'
+                >
                     {(props) => <LoginScreen{...props} accounts={accounts}/>}
+                </Stack.Screen>
+                <Stack.Screen
+                    name='Register'
+                    options={{
+                        title: "",
+                        headerShown: false,
+                    }}
+                >
+                    {(props) => <RegisterScreen{...props} accounts={accounts} setAccounts={setAccounts}/>}
                 </Stack.Screen>
                 <Stack.Screen
                     name='Home'
                     options={{
                         headerLeft: null,
+                        title: "",
+                        headerShown: false,
                     }}
                 >
                     {(props) => <HomeScreen{...props}/>}
                 </Stack.Screen>
-                <Stack.Screen name='CreateGroup'>
+                <Stack.Screen
+                    name='CreateGroup'
+                    options={{
+                        headerLeft: null,
+                        title: "",
+                        headerShown: false,
+                    }}
+                >
                     {(props) => <CreateGroupScreen{...props}/>}
                 </Stack.Screen>
-                <Stack.Screen name='GroupDetailsAdmin'>
+                <Stack.Screen
+                    name='GroupDetailsAdmin'
+                    options={{
+                        headerLeft: null,
+                        title: "",
+                        headerShown: false,
+                    }}
+                >
                     {(props) => <GroupDetailsAdminScreen{...props}/>}
                 </Stack.Screen>
-                <Stack.Screen name='GroupDetails'>
+                <Stack.Screen
+                    name='GroupDetails'
+                    options={{
+                        headerLeft: null,
+                        title: "",
+                        headerShown: false,
+                    }}
+                >
                     {(props) => <GroupDetailsScreen{...props}/>}
                 </Stack.Screen>
-                <Stack.Screen name='CreateExpense'>
+                <Stack.Screen
+                    name='CreateExpense'
+                    options={{
+                        headerLeft: null,
+                        title: "",
+                        headerShown: false,
+                    }}
+                >
                     {(props) => <CreateExpenseScreen{...props}/>}
                 </Stack.Screen>
-                <Stack.Screen name='Profile'>
+                <Stack.Screen
+                    name='Profile'
+                    options={{
+                        headerLeft: null,
+                        title: "",
+                        headerShown: false,
+                    }}
+                >
                     {(props) => <ProfileScreen{...props}/>}
-                </Stack.Screen>
-                <Stack.Screen name='Register'>
-                    {(props) => <RegisterScreen{...props} accounts={accounts} setAccounts={setAccounts}/>}
                 </Stack.Screen>
             </Stack.Navigator>
         </NavigationContainer>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import TextField from './TextField.tsx';
+import { View, Text, Pressable } from 'react-native';
 import styles from './styles/styles.js';
+import theme from './styles/theme.js';
 
 const RegisterScreen = ({navigation, accounts, setAccounts}) => {
     const [username, setUsername] = useState('')
@@ -14,39 +16,48 @@ const RegisterScreen = ({navigation, accounts, setAccounts}) => {
             setAccounts({...accounts, [username]: password});
             navigation.navigate('Login')
         } else {
-            alert('Campos invailidos')
+            alert('Invalid Fields')
         }
     }
 
     return (
         <View style={styles.container}>
-            <Text style={styles.label}>Nome de Usuario:</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setUsername(text)}
+            <Text style={styles.title}>Create an Account</Text>
+            <TextField
                 value={username}
+                iconName='user'
+                iconSize={24}
+                label='Username'
+                onChangeText={(text) => setUsername(text)}
             />
-            <Text style={styles.label}>Senha:</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setPassword(text)}
+            <TextField
                 value={password}
+                iconName='lock1'
+                iconSize={24}
+                label='Password'
+                onChangeText={(text) => setPassword(text)}
                 secureTextEntry={true}
             />
-            <Text style={styles.label}>Repetir Senha:</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setConfirmPassword(text)}
+            <TextField
                 value={confirmPassword}
+                iconName='lock1'
+                iconSize={24}
+                label='Confirm Password'
+                onChangeText={(text) => setConfirmPassword(text)}
                 secureTextEntry={true}
             />
-            <Text style={styles.label}>Email:</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setEmail(text)}
+            <TextField
                 value={email}
+                iconName='mail'
+                iconSize={24}
+                label='Email'
+                onChangeText={(text) => setEmail(text)}
             />
-            <Button title='Registrar' onPress={handleRegister}/>
+            <Pressable style={styles.button} onPress={handleRegister}>
+                <Text style={{"fontFamily": "Roboto", "color": theme.md_sys_color_on_prime}}>
+                    Register
+                </Text>
+            </Pressable>
         </View>
     )
 }

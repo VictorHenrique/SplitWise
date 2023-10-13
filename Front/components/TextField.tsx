@@ -24,7 +24,7 @@ const TextField: React.FC<Props> = (props) => {
       useNativeDriver: false,
     }).start()
   }, [focusAnimation, isFocused, value])
-  
+
   return (
     <Animated.View style={[styles.inputContainer, {
       borderColor: focusAnimation.interpolate({
@@ -35,7 +35,7 @@ const TextField: React.FC<Props> = (props) => {
         <View style={styles.iconContainer}>
             <AntDesign name={iconName} size={iconSize} color={isFocused ? theme.md_sys_color_on_tertiary_container : theme.md_sys_color_outline}/>
         </View>
-        
+
         <Animated.View style={[inputStyle.inputContainer, {
           top: focusAnimation.interpolate({
             inputRange: [0, 1],

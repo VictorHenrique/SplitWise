@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import styles from './styles/styles.js';
 import typography from './styles/typography.js';
 import { useRoute } from '@react-navigation/native';
@@ -45,29 +45,36 @@ const HomeScreen = ({navigation}) => {
     return (
         <View style={styles.containerHome}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={handleProfilePress}>
+                <Pressable onPress={handleProfilePress}>
                     <View style={styles.profile}>
-                        <FontAwesome name="user-circle" size={32} color="gray" style={styles.profileIcon}/>
+                        <FontAwesome
+                            name="user-circle"
+                            size={32}
+                            style={styles.profileIcon}
+                        />
                         <Text style={styles.username}>Hello, {username}</Text>
                     </View>
-                </TouchableOpacity>
+                </Pressable>
             </View>
 
             <View style={styles.groupList}>
                 {Object.entries(groups).map(([groupName, index]) => (
-                    <TouchableOpacity
+                    <Pressable
                         key={index}
-                        style={styles.groupButton}
+                        style={styles.groupButtonHome}
                         onPress={() => handleGroupDetails(groupName)}
                     >
                         <Text style={styles.groupButtonText}>{groupName}</Text>
-                    </TouchableOpacity>
+                    </Pressable>
                 ))}
             </View>
 
-            <TouchableOpacity style={styles.createGroupButton} onPress={() => navigation.navigate('CreateGroup', {addGroup: addGroup, username: username})}>
+            <Pressable
+                style={styles.createGroupButton}
+                onPress={() => navigation.navigate('CreateGroup', {addGroup: addGroup, username: username})}
+            >
                 <Text style={styles.createGroupButtonText}>Criar Grupo</Text>
-            </TouchableOpacity>
+            </Pressable>
         </View>
     );
 };

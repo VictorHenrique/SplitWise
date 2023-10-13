@@ -1,5 +1,7 @@
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, Pressable } from 'react-native';
+import { Fontisto } from '@expo/vector-icons';
 import styles from './styles/styles.js';
+import theme from './styles/theme.js';
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -61,6 +63,11 @@ const GroupDetailsScreen = ({route, navigation}) => {
         return 0;
     }
 
+    const handleDeleteGroup = () => {
+        deleteGroup(groupName);
+        navigation.goBack();
+    }
+
     const addExpense = async (newExpense) => {
         try {
             // Obtém as despesas atuais do AsyncStorage (se houver)
@@ -96,10 +103,10 @@ const GroupDetailsScreen = ({route, navigation}) => {
     return (
         <View style={styles.containerHome}>
             <View style={styles.groupHeader}>
-                <Text style={styles.label}>Detalhes do Grupo: {groupName}</Text>
+                <Text style={styles.title}>{groupName} Group Details</Text>
             </View>
-            <Button
-                title="Adicionar Despesa"
+            <Pressable
+                style={styles.createGroupButton}
                 onPress={() =>
                     navigation.navigate('CreateExpense', {
                         groupName: groupName,
@@ -107,40 +114,48 @@ const GroupDetailsScreen = ({route, navigation}) => {
                         addExpense: addExpense,
                     })
                 }
-            />
-            <Text style={styles.label}>Total de Despesas do Grupo: ${calculateTotalExpenses()}</Text>
-            <Button title="Pay" onPress={handleToggleExpenses} />
-            <Text style={styles.label}>Despesas do Grupo:</Text>
+            >
+                <Text style={styles.createGroupButtonText}>Add Expense</Text>
+            </Pressable>
+            <Pressable
+                style={styles.createGroupButton}
+                onPress={handleToggleExpenses}
+            >
+                <Text style={styles.createGroupButtonText}>Pay your expenses</Text>
+            </Pressable>
+            <Text style={styles.groupExpensesTitle}>Group Expenses:</Text>
             {userExpenses.length === 0 ? (
-                <Text>Nenhuma despesa disponível.</Text>
+                <Text style={styles.noExpenses}>Any expense available.</Text>
             ) : (
                 userExpenses.map((expense) => (
                     <View key={expense.id}>
-                        <Button
-                            title={expense.name}
+                        <Pressable
+                            style={styles.expenseDetailButton}
                             onPress={() => {
                                 setIsExpenseOpen((prevState) => ({
                                     ...prevState,
                                     [expense.id]: !prevState[expense.id],
                                 }));
                             }}
-                        />
+                        >
+                            <Text style={styles.createGroupButtonText}>{expense.name}</Text>
+                        </Pressable>
                         {isExpenseOpen[expense.id] && (
                             <View>
-                                <Text style={styles.label}>Detalhes da Despesa:</Text>
-                                <Text>Nome: {expense.name}</Text>
-                                <Text>Valor Total: ${expense.amount}</Text>
-                                <Text>Membros: {expense.members.join(',')}</Text>
-                                <Text>Valor a Pagar: ${calculateUserShare(expense)}</Text>
+                                <Text style={styles.titleExpense}>Expense Details:</Text>
+                                <Text style={styles.fieldExpense}>Name: {expense.name}</Text>
+                                <Text style={styles.fieldExpense}>Total Value: ${expense.amount}</Text>
+                                <Text style={styles.fieldExpense}>Members: {expense.members.join(',')}</Text>
+                                <Text style={styles.fieldExpense}>Value to pay: ${calculateUserShare(expense)}</Text>
                             </View>
                         )}
                     </View>
                 ))
             )}
+
+            <Text style={styles.totalGroupExpenses}>Total Group Expenses: ${calculateTotalExpenses()}</Text>
         </View>
     )
 };
 
 export default GroupDetailsScreen;
-
-
