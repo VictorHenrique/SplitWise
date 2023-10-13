@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
-import styles from '../styles.js';
+import styles from './styles/styles.js';
 
 const ProfileScreen = () => {
     const [userData, setUserData] = useState({
