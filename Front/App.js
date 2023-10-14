@@ -14,7 +14,9 @@ import theme from './components/styles/theme.js';
 const Stack = createStackNavigator();
 
 const App = () => {
-    const [accounts, setAccounts] = useState({});
+    const [accounts, setAccounts] = useState({
+        'a': 'a'
+    });
 
     return (
         <NavigationContainer>

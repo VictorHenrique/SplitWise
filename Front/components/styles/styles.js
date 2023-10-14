@@ -112,10 +112,11 @@ const styles = StyleSheet.create({
   },
   membersList: {
     marginTop: 8,
+    color: theme.md_sys_color_on_primary_container
   },
   memberName: {
       fontSize: 18,
-      color: theme.md_sys_color_secondary,
+      color: theme.md_sys_color_primary,
   },
   memberItem: {
     flexDirection: 'row',
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
   addMemberContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
   },
   addMemberButton: {
     fontSize: 48,
@@ -155,7 +156,6 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    // borderWidth: 1,
     backgroundColor: theme.md_sys_color_primary,
     borderRadius: 10,
     padding: 15,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRoute } from '@react-navigation/native';
 import { View, Text, Pressable } from 'react-native';
 import TextField from './TextField.tsx';
@@ -33,6 +33,10 @@ const CreateGroupScreen = ({navigation}) => {
         }
     };
 
+    useEffect(() => {
+
+    });
+
     const removeMember = (index) => {
         const updatedMembers = [...members];
         updatedMembers.splice(index, 1);
@@ -42,7 +46,7 @@ const CreateGroupScreen = ({navigation}) => {
     return (
         <View style={styles.containerHome}>
             <View style={styles.header}>
-                <Text style={styles.title}>Create a new group</Text>
+                <Text style={styles.title}>Create new group</Text>
                 <TextField
                     value={groupName}
                     label='Group Name'
@@ -56,14 +60,15 @@ const CreateGroupScreen = ({navigation}) => {
 
             <View style={styles.addMemberContainer}>
                 <TextField
+                    style={{width: "90%"}}
                     value={newMember}
                     label='New Member'
                     iconName='addusergroup'
                     iconSize={24}
                     onChangeText={(text) => setNewMember(text)}
                 />
-                <Pressable onPress={addMember}>
-                    <Ionicons name="add-circle-outline" size={24} color={theme.md_sys_color_secondary}/>
+                <Pressable style={{bottom: -9}} onPress={addMember}>
+                    <Ionicons name="add-circle-outline" size={26} color={theme.md_sys_color_secondary}/>
                 </Pressable>
             </View>
 

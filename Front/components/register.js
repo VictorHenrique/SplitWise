@@ -22,7 +22,7 @@ const RegisterScreen = ({navigation, accounts, setAccounts}) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Create an Account</Text>
+            <Text style={styles.title}>Create Account</Text>
             <TextField
                 value={username}
                 iconName='user'
