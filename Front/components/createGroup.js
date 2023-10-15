@@ -11,10 +11,20 @@ const CreateGroupScreen = ({navigation}) => {
     const route = useRoute();
     const { addGroup, username } = route.params;
     const [groupName, setGroupName] = useState('');
-    const [members, setMembers] = useState(new Set());
+    const [members, setMembers] = useState({});
     const [newMember, setNewMember] = useState('');
+    const [nxtIdx, setNxtIdx] = useState([[0, true]]);
     const [selected, setSelected] = useState(-1);
     const dummyPic = 'https://thispersondoesnotexist.com/';
+
+    const getIndex = () => {
+        let avaiableIndexes = [...nxtIdx];
+        let [idx, isLastIdx] = avaiableIndexes.pop();
+        if (isLastIdx === true) avaiableIndexes.push([idx + 1, true]);
+        setNxtIdx(avaiableIndexes);
+
+        return idx;
+    };
 
     const handleSubmit = () => {
         const newGroup = {groupName, members: [...members, username]};
@@ -24,13 +34,15 @@ const CreateGroupScreen = ({navigation}) => {
         }
 
         addGroup(newGroup);
-
         navigation.goBack();
     };
 
     const addMember = () => {
         if (newMember.trim() !== '') {
-            setMembers([...members, newMember]);
+            idx = getIndex();
+            let updatedMembers = {...members};
+            updatedMembers[idx] = newMember;
+            setMembers(updatedMembers);
             setNewMember('');
         }
     };
@@ -39,9 +51,9 @@ const CreateGroupScreen = ({navigation}) => {
         setSelected(selected == index ? -1 : index);
     }
 
-    const removeMember = (index) => {
-        const updatedMembers = [...members];
-        updatedMembers.splice(index, 1);
+    const removeMember = (idx) => {
+        let updatedMembers = {...members};
+        delete updatedMembers[idx];
         setMembers(updatedMembers);
         setSelected(-1);
     };
@@ -78,16 +90,16 @@ const CreateGroupScreen = ({navigation}) => {
             </View>
 
             <View style={styles.membersList}>
-                {members.map((member, index) => (
+                {Object.keys(members).map((index) => (
                     <Pressable key={index} onPress={() =>  {handleSelection(index)}}>
                         <View style={selected == index ? styles.removeMember : styles.memberItem}>
                             <View style={styles.memberPic}>
-                                {selected != index ? <Image style={{width: profilePicSize, height:profilePicSize, borderRadius: Math.trunc(profilePicSize/2)}} source={{uri: dummyPic}}/> :
-                                                     <Ionicons onPress={removeMember} style={{marginLeft:10}} name="person-remove-outline" size={40} color={theme.md_sys_color_error} />}
+                                {selected != index && <Image style={{width: profilePicSize, height:profilePicSize, borderRadius: Math.trunc(profilePicSize/2)}} source={{uri: dummyPic}}/>}
+                                {selected == index && <Ionicons onPress={() => {removeMember(index)}} style={{marginLeft:10}} name="person-remove-outline" size={40} color={theme.md_sys_color_error} />}
                             </View>
                             <View style={styles.memberNameContainer}>
-                                <Text numberOfLines={1} style={styles.memberName}>{member}</Text>
-                                <Text numberOfLines={1} style={styles.memberUsername}>@username_{member.toLowerCase()}</Text>
+                                <Text numberOfLines={1} style={styles.memberName}>{members[index]}</Text>
+                                <Text numberOfLines={1} style={styles.memberUsername}>@username_{members[index].toLowerCase()}</Text>
                             </View>
                         </View>
                     </Pressable>

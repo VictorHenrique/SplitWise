@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   groupButtonText: {
-    color: 'white',
+    color: theme.md_sys_color_on_secondary,
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
