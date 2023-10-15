@@ -82,7 +82,7 @@ const typography = {
     // textDecoration: tokens.md_sys_typescale_body_medium_text_decoration,
   },
   body_small: {
-    fontFamily: tokens.md_sys_typescale_body_small_font_family_name,
+    // fontFamily: tokens.md_sys_typescale_body_small_font_family_name,
     // fontStyle: tokens.md_sys_typescale_body_small_font_family_style,
     // fontWeight: tokens.md_sys_typescale_body_small_font_weight,
     fontSize: tokens.md_sys_typescale_body_small_font_size,

@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import theme from './theme.js';
+import typography from './typography.js';
 
 const styles = StyleSheet.create({
   container: {
@@ -106,24 +107,49 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   createGroupButtonText: {
-    color: 'white',
+    color: theme.md_sys_color_on_tertiary,
     fontSize: 16,
     fontWeight: 'bold',
   },
   membersList: {
     marginTop: 8,
-    color: theme.md_sys_color_on_primary_container
+    color: theme.md_sys_color_on_primary_container,
+    width: "98%",
+  },
+  memberNameContainer: {
+    justifyContent: "flex-start",
+    width: "75%",
+    padding: 5,
   },
   memberName: {
       fontSize: 18,
-      color: theme.md_sys_color_primary,
+      color: theme.md_sys_color_secondary,
   },
-  memberItem: {
+  memberUsername: {
+    color: theme.md_sys_color_secondary,
+    fontSize: 14,
+    justifyContent: "space-around",
+  },
+  memberPic: {
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  removeMember: {
+    backgroundColor: theme.md_sys_color_tertiary_container,
+    margin: 2,
+    width: "100%",
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 8,
+    borderRadius: 5,
+  },  
+  memberItem: {
+    margin: 2,
+    width: "100%",
+    flexDirection: 'row',
+    alignItems: 'center',
     color: theme.md_sys_color_secondary,
+    backgroundColor: theme.md_sys_color_surface_variant,
+    borderRadius: 5,
   },
   removeMemberButton: {
     fontSize: 20,

@@ -1,18 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRoute } from '@react-navigation/native';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import TextField from './TextField.tsx';
 import theme from './styles/theme.js';
-import { Fontisto } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
 import styles from './styles/styles.js';
 
 const CreateGroupScreen = ({navigation}) => {
+    const profilePicSize = 50;
     const route = useRoute();
     const { addGroup, username } = route.params;
     const [groupName, setGroupName] = useState('');
-    const [members, setMembers] = useState([]);
+    const [members, setMembers] = useState(new Set());
     const [newMember, setNewMember] = useState('');
+    const [selected, setSelected] = useState(-1);
+    const dummyPic = 'https://thispersondoesnotexist.com/';
 
     const handleSubmit = () => {
         const newGroup = {groupName, members: [...members, username]};
@@ -33,14 +35,15 @@ const CreateGroupScreen = ({navigation}) => {
         }
     };
 
-    useEffect(() => {
-
-    });
+    const handleSelection = (index) => {
+        setSelected(selected == index ? -1 : index);
+    }
 
     const removeMember = (index) => {
         const updatedMembers = [...members];
         updatedMembers.splice(index, 1);
         setMembers(updatedMembers);
+        setSelected(-1);
     };
 
     return (
@@ -48,6 +51,8 @@ const CreateGroupScreen = ({navigation}) => {
             <View style={styles.header}>
                 <Text style={styles.title}>Create new group</Text>
                 <TextField
+                    numberOfLines={1}
+                    style={{width: "98%"}}
                     value={groupName}
                     label='Group Name'
                     iconName='team'
@@ -74,12 +79,18 @@ const CreateGroupScreen = ({navigation}) => {
 
             <View style={styles.membersList}>
                 {members.map((member, index) => (
-                    <View key={index} style={styles.memberItem}>
-                        <Text style={styles.memberName}>{member}</Text>
-                        <Pressable onPress={() => removeMember(index)}>
-                            <Fontisto name="trash" size={24} color={theme.md_sys_color_error} style={styles.removeMemberButton}/>
-                        </Pressable>
-                    </View>
+                    <Pressable key={index} onPress={() =>  {handleSelection(index)}}>
+                        <View style={selected == index ? styles.removeMember : styles.memberItem}>
+                            <View style={styles.memberPic}>
+                                {selected != index ? <Image style={{width: profilePicSize, height:profilePicSize, borderRadius: Math.trunc(profilePicSize/2)}} source={{uri: dummyPic}}/> :
+                                                     <Ionicons onPress={removeMember} style={{marginLeft:10}} name="person-remove-outline" size={40} color={theme.md_sys_color_error} />}
+                            </View>
+                            <View style={styles.memberNameContainer}>
+                                <Text numberOfLines={1} style={styles.memberName}>{member}</Text>
+                                <Text numberOfLines={1} style={styles.memberUsername}>@username_{member.toLowerCase()}</Text>
+                            </View>
+                        </View>
+                    </Pressable>
                 ))}
             </View>
 
