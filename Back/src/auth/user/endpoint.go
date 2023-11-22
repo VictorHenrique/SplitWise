@@ -1,10 +1,9 @@
 package user
 
 import (
-	"fmt"
 	"time"
 	"context"
-
+	"auth/pkg/model"
 	"github.com/go-kit/kit/endpoint"
 )
 
@@ -23,7 +22,7 @@ type registerUserResponse struct {
 	Err   string `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
-func makeRegisterUserEndpoint(svc Service) endpoint.Endpoint {
+func MakeRegisterUserEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request any) (any, error) {
 		req := request.(registerUserRequest)
 
@@ -46,7 +45,7 @@ func makeRegisterUserEndpoint(svc Service) endpoint.Endpoint {
 }
 
 type loginUserRequest struct {
-	Email    string `json:"email"`
+	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
@@ -55,11 +54,10 @@ type loginUserResponse struct {
 	Err   string `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
-func makeLoginUserEndpoint(svc Service) endpoint.Endpoint {
+func MakeLoginUserEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request any) (any, error) {
 		req := request.(loginUserRequest)
-
-		token, err := svc.loginUser(ctx, req.Email, req.Password)
+		token, err := svc.LoginUser(ctx, req.Username, req.Password)
 		if err != nil {
 			return loginUserResponse{"", err.Error()}, err
 		}
@@ -76,7 +74,7 @@ type validateTokenResponse struct {
 	Err      string `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
-func makeValidateTokenEndpoint(svc Service) endpoint.Endpoint {
+func MakeValidateTokenEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request any) (any, error) {
 		req := request.(validateTokenRequest)
 
@@ -84,6 +82,6 @@ func makeValidateTokenEndpoint(svc Service) endpoint.Endpoint {
 		if err != nil {
 			return validateTokenResponse{"", err.Error()}, err
 		}
-		return validateTokenResponse{email, ""}, err
+		return validateTokenResponse{username, ""}, err
 	}
 }

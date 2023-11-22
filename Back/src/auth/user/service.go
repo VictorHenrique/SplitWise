@@ -4,6 +4,8 @@ import (
 	"auth/security"
 	"context"
 	"errors"
+    "auth/pkg/model"
+	"database/sql"
 )
 
 type Service interface {
@@ -26,24 +28,22 @@ var (
 )
 
 type service struct{
-	repo *authRepository
+	repo authRepository
 }
 
-func NewService(userRepo *authRepository) *service {
-	return &service{
-		repo: userRepo
-	}
+func NewService(userRepo authRepository) *service {
+	return &service {repo: userRepo}
 }
 
 func (s *service) RegisterUser(ctx context.Context, createdUser *model.User) (string, error) {
-	err := s.repo.CreateUser(ctx, createdUser.Username)
+	err := s.repo.CreateUser(ctx, createdUser)
 	if err != nil {
-		return nil, ErrDuplicateUser
+		return "", ErrDuplicateUser
 	}
 
 	token, err := security.NewToken(createdUser.Username)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	return token, nil
@@ -51,13 +51,13 @@ func (s *service) RegisterUser(ctx context.Context, createdUser *model.User) (st
 
 func (s *service) LoginUser(ctx context.Context, username, password string) (string, error) {
 	user, err := s.repo.GetUserByUsername(ctx, username)
-	if err := sql.ErrNoRows || user.Password != password  {
-		return nil, ErrInvalidUser
+	if user == nil || err == sql.ErrNoRows || user.Password != password  {
+		return "", ErrInvalidUser
 	}
 
 	token, err := security.NewToken(user.Username)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	return token, nil
 }
@@ -65,12 +65,12 @@ func (s *service) LoginUser(ctx context.Context, username, password string) (str
 func (s *service) ValidateToken(ctx context.Context, token string) (string, error) {
 	t, err := security.ParseToken(token)
 	if err != nil {
-		return nil, ErrInvalidToken
+		return "", ErrInvalidToken
 	}
 
 	tData, err := security.GetClaims(t)
 	if err != nil {
-		return nil, ErrInvalidToken
+		return "", ErrInvalidToken
 	}
 
 	return tData["username"].(string), nil

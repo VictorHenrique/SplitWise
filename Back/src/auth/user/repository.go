@@ -1,24 +1,21 @@
 package user
 
 import (
-    "time"
     "fmt"
     "log"
     "context"
     "database/sql"
-    "splitwise/auth/pkg/model"
     _ "github.com/lib/pq"
     "auth/pkg/model"
 )
 
 
-// Define of database connections parameters
 const (
     host     = "localhost"
     port     = 5432
     user     = "postgres"
     password = "admin"
-    dbname   = "splitwise-db"
+    dbname   = "split_wise"
 )
 
 type Repository struct {
@@ -36,7 +33,7 @@ func (r *Repository) GetUserByUsername(ctx context.Context, username string) (*m
     fmt.Println(row)
 
     user := &model.User{}
-    err := row.Scan(&user.Username, &user.Password) {
+    err := row.Scan(&user.Username, &user.Password)
     if err != nil {
         return nil, err
     }
@@ -85,6 +82,8 @@ func ConnectToDB() *Repository {
     log.Printf("Connecting to postgres database")
 
     psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+    fmt.Println(psqlInfo)
+
     db, err := sql.Open("postgres", psqlInfo)
     if err != nil {
         log.Fatal(err)
@@ -99,7 +98,7 @@ func ConnectToDB() *Repository {
 
     log.Printf("Succesfully connected!")
     
-    return New(db)
+    return NewDB(db)
 }
 
 func (r *Repository) CloseDB() error {

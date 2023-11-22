@@ -19,21 +19,21 @@ func NewHttpServer(svc Service, logger kitlog.Logger) *mux.Router {
 	}
 
 	registerUserHandler := kithttp.NewServer(
-		makeRegisterUserEndpoint(svc),
+		MakeRegisterUserEndpoint(svc),
 		decodeRegisterUserRequest,
 		encodeResponse,
 		options...,
 	)
 
 	loginUserHandler := kithttp.NewServer(
-		makeLoginUserEndpoint(svc),
+		MakeLoginUserEndpoint(svc),
 		decodeLoginUserRequest,
 		encodeResponse,
 		options...,
 	)
 
 	validateTokenHandler := kithttp.NewServer(
-		makeValidateTokenEndpoint(svc),
+		MakeValidateTokenEndpoint(svc),
 		decodeValidateTokenRequest,
 		encodeResponse,
 		options...,
@@ -66,7 +66,7 @@ func encodeErrorResponse(_ context.Context, err error, w http.ResponseWriter) {
 
 func codeFrom(err error) int {
 	switch err {
-	case DuplicateUser:
+	case ErrDuplicateUser:
 		return http.StatusForbidden
 	case ErrInvalidUser:
 		return http.StatusNotFound

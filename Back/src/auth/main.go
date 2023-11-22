@@ -1,7 +1,7 @@
 package main
 
 import (
-	"user/user"
+	"auth/user"
 	"net/http"
 	"os"
 	"github.com/go-kit/kit/log"
@@ -12,9 +12,8 @@ func main() {
 	logger = log.NewLogfmtLogger(os.Stderr)
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC, "listen", "8081", "caller", log.DefaultCaller)
 
-	db := user.ConnectToDB()
-	repo := user.NewDB(db)
-
+	repo := user.ConnectToDB()
+	
 	s := user.NewService(repo)
 	r := user.NewHttpServer(s, logger)
 	
