@@ -1,4 +1,4 @@
-package postgres
+package user
 
 import (
     "time"
@@ -8,6 +8,7 @@ import (
     "database/sql"
     "splitwise/auth/pkg/model"
     _ "github.com/lib/pq"
+    "auth/pkg/model"
 )
 
 
@@ -24,11 +25,11 @@ type Repository struct {
     db *sql.DB
 }
 
-func New(db *sql.DB) *Repository {
+func NewDB(db *sql.DB) *Repository {
     return &Repository{db: db}
 }
 
-func (r *Repository) GetUserByUsername(_ context.Context, username string) (*model.User, error) {
+func (r *Repository) GetUserByUsername(ctx context.Context, username string) (*model.User, error) {
     query := "SELECT username, password FROM user_account WHERE username = $1"
     row := r.db.QueryRow(query, username)
 
@@ -43,7 +44,7 @@ func (r *Repository) GetUserByUsername(_ context.Context, username string) (*mod
     return user, nil
 }
 
-func (r *Repository) CreateUser(_ context.Context, user *model.User) error {
+func (r *Repository) CreateUser(ctx context.Context, user *model.User) error {
     query := "INSERT INTO user_account (username, password, email, name, surname, phone, register_date) VALUES ($1, $2, $3, $4, $5, $6, $7)"
     _, err := r.db.Exec(query, user.Username, user.Password, user.Email, user.Name, user.Surname, user.Phone, user.RegisterDate)
 
@@ -51,7 +52,7 @@ func (r *Repository) CreateUser(_ context.Context, user *model.User) error {
 }
 
 
-func (r *Repository) GetAllUsers(_ context.Context) ([]model.User, error) {
+func (r *Repository) GetAllUsers(ctx context.Context) ([]model.User, error) {
     query := "SELECT * FROM user_account;"
     rows, err := r.db.Query(query)
     fmt.Println(rows, err)
