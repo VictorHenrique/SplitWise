@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	kitlog "github.com/go-kit/kit/log"
+	kitlog "github.com/go-kit/log"
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
@@ -18,31 +18,39 @@ func NewHttpServer(svc Service, logger kitlog.Logger) *mux.Router {
 		kithttp.ServerFinalizer(newServerFinalizer(logger)),
 	}
 
-	registerUserHandler := kithttp.NewServer(
-		MakeRegisterUserEndpoint(svc),
-		decodeRegisterUserRequest,
+	registerGroupHandler := kithttp.NewServer(
+		MakeRegisterGroupEndpoint(svc),
+		decodeRegisterGroupRequest,
 		encodeResponse,
 		options...,
 	)
 
-	loginUserHandler := kithttp.NewServer(
-		MakeLoginUserEndpoint(svc),
-		decodeLoginUserRequest,
+	deleteGroupHandler := kithttp.NewServer(
+		MakeDeleteGroupEndpoint(svc),
+		decodeDeleteGroupRequest,
 		encodeResponse,
 		options...,
 	)
 
-	validateTokenHandler := kithttp.NewServer(
-		MakeValidateTokenEndpoint(svc),
-		decodeValidateTokenRequest,
+	getGroupHandler := kithttp.NewServer(
+		MakeGetGroupEndpoint(svc),
+		decodeGetGroupRequest,
+		encodeResponse,
+		options...,
+	)
+
+	getAllGroupsHandler := kithttp.NewServer(
+		MakeGetAllGroupsEndpoint(svc),
+		decodeGetAllGroupsRequest,
 		encodeResponse,
 		options...,
 	)
 
 	r := mux.NewRouter()
-	r.Methods("POST").Path("/register-user").Handler(registerUserHandler)
-	r.Methods("POST").Path("/login-user").Handler(loginUserHandler)
-	r.Methods("POST").Path("/validate-token").Handler(validateTokenHandler)
+	r.Methods("POST").Path("/register-group").Handler(registerGroupHandler)
+    r.Methods("DELETE").Path("/delete-group").Handler(deleteGroupHandler)
+	r.Methods("GET").Path("/get-group").Handler(getGroupHandler)
+	r.Methods("GET").Path("/get-all-groups").Handler(getAllGroupsHandler)
 
 	return r
 }
@@ -66,10 +74,6 @@ func encodeErrorResponse(_ context.Context, err error, w http.ResponseWriter) {
 
 func codeFrom(err error) int {
 	switch err {
-	case ErrDuplicateUser:
-		return http.StatusForbidden
-	case ErrInvalidUser:
-		return http.StatusNotFound
 	case ErrInvalidToken:
 		return http.StatusUnauthorized
 	default:
@@ -77,24 +81,32 @@ func codeFrom(err error) int {
 	}
 }
 
-func decodeRegisterUserRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	var request registerUserRequest
+func decodeRegisterGroupRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	var request registerGroupRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, err
 	}
 	return request, nil
 }
 
-func decodeLoginUserRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	var request loginUserRequest
+func decodeDeleteGroupRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	var request deleteGroupRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, err
 	}
 	return request, nil
 }
 
-func decodeValidateTokenRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	var request validateTokenRequest
+func decodeGetGroupRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	var request getGroupRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
+	}
+	return request, nil
+}
+
+func decodeGetAllGroupsRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	var request getAllGroupsRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, err
 	}

@@ -30,8 +30,6 @@ func (r *Repository) GetUserByUsername(ctx context.Context, username string) (*m
     query := "SELECT username, password FROM user_account WHERE username = $1"
     row := r.db.QueryRow(query, username)
 
-    fmt.Println(row)
-
     user := &model.User{}
     err := row.Scan(&user.Username, &user.Password)
     if err != nil {
@@ -52,7 +50,6 @@ func (r *Repository) CreateUser(ctx context.Context, user *model.User) error {
 func (r *Repository) GetAllUsers(ctx context.Context) ([]model.User, error) {
     query := "SELECT * FROM user_account;"
     rows, err := r.db.Query(query)
-    fmt.Println(rows, err)
 
     if err != nil {
         return nil, err
@@ -82,7 +79,6 @@ func ConnectToDB() *Repository {
     log.Printf("Connecting to postgres database")
 
     psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-    fmt.Println(psqlInfo)
 
     db, err := sql.Open("postgres", psqlInfo)
     if err != nil {
@@ -97,7 +93,7 @@ func ConnectToDB() *Repository {
     }
 
     log.Printf("Succesfully connected!")
-    
+
     return NewDB(db)
 }
 

@@ -1,12 +1,13 @@
 package group
 
 import (
-    "fmt"
-    "log"
-    "context"
-    "database/sql"
-    _ "github.com/lib/pq"
-    "group/pkg/model"
+	"context"
+	"database/sql"
+	"fmt"
+	"groups/pkg/model"
+	"log"
+
+	_ "github.com/lib/pq"
 )
 
 
@@ -26,57 +27,74 @@ func NewDB(db *sql.DB) *Repository {
     return &Repository{db: db}
 }
 
-func (r *Repository) GetUserByUsername(ctx context.Context, username string) (*model.User, error) {
-    query := "SELECT username, password FROM user_account WHERE username = $1"
-    row := r.db.QueryRow(query, username)
+func (r *Repository) GetGroupByID(ctx context.Context, groupID int) (*model.Group, error) {
+    query := "SELECT * FROM users_group WHERE index = $1"
+    row := r.db.QueryRow(query, groupID)
 
-    fmt.Println(row)
-
-    user := &model.User{}
-    err := row.Scan(&user.Username, &user.Password)
+    group := &model.Group{}
+    err := row.Scan(
+        &group.Index,
+        &group.Name,
+        &group.Owner,
+        &group.AmountUsers,
+        &group.AmountExpenses,
+        &group.CreationDate,
+    )
     if err != nil {
         return nil, err
     }
-
-    return user, nil
+    return group, nil
 }
 
-func (r *Repository) CreateUser(ctx context.Context, user *model.User) error {
-    query := "INSERT INTO user_account (username, password, email, name, surname, phone, register_date) VALUES ($1, $2, $3, $4, $5, $6, $7)"
-    _, err := r.db.Exec(query, user.Username, user.Password, user.Email, user.Name, user.Surname, user.Phone, user.RegisterDate)
+func (r *Repository) GetAllGroupsFromUser(ctx context.Context, username string) ([]model.Group, error) {
+    query := `
+        SELECT index, owner, name, creation_date, amount_users, amount_expenses
+        FROM users_group
+        WHERE owner = $1
+    `
+    rows, err := r.db.QueryContext(ctx, query, username)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    var groups []model.Group
+    for rows.Next() {
+        var group model.Group
+        err := rows.Scan(
+            &group.Index,
+            &group.Owner,
+            &group.Name,
+            &group.CreationDate,
+            &group.AmountUsers,
+            &group.AmountExpenses,
+        )
+        if err != nil {
+            return nil, err
+        }
+        groups = append(groups, group)
+    }
+
+    if err := rows.Err(); err != nil {
+        return nil, err
+    }
+
+    return groups, nil
+}
+
+func (r *Repository) CreateGroup(ctx context.Context, group *model.Group) error {
+    query := "INSERT INTO users_group (index, owner, name, creation_date, amount_users, amount_expenses) VALUES ($1, $2, $3, $4, $5, $6)"
+    _, err := r.db.Exec(query, group.Index, group.Owner, group.Name, group.CreationDate, group.AmountUsers, group.AmountExpenses)
 
     return err
 }
 
+func (r *Repository) DeleteGroup(ctx context.Context, groupID int) error {
+    query := "DELETE FROM users_group WHERE index = $1"
+    _, err := r.db.Exec(query, groupID)
 
-func (r *Repository) GetAllUsers(ctx context.Context) ([]model.User, error) {
-    query := "SELECT * FROM user_account;"
-    rows, err := r.db.Query(query)
-    fmt.Println(rows, err)
-
-    if err != nil {
-        return nil, err
-    }
-
-    defer rows.Close()
-
-    var users []model.User
-
-    for rows.Next() {
-        var user model.User
-        if err := rows.Scan(&user.Username, &user.Password, &user.Email, &user.Name, &user.Surname, &user.Phone, &user.RegisterDate); err != nil {
-            return users, err
-        }
-        users = append(users, user)
-    }
-
-    if err = rows.Err(); err != nil {
-        return users, err
-    }
-
-    return users, nil
+    return err
 }
-
 
 func ConnectToDB() *Repository {
     log.Printf("Connecting to postgres database")
@@ -97,7 +115,7 @@ func ConnectToDB() *Repository {
     }
 
     log.Printf("Succesfully connected!")
-    
+
     return NewDB(db)
 }
 

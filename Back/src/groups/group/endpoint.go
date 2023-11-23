@@ -1,87 +1,105 @@
 package group
 
 import (
-	"time"
 	"context"
-	"group/pkg/model"
+	"groups/pkg/model"
+	"time"
+
 	"github.com/go-kit/kit/endpoint"
 )
 
-type registerUserRequest struct {
-    Username     string `json:"username"`
-	Email        string `json:"email"`
-    Password     string `json:"password"`
-	Name         string `json:"name"`
-	Surname      string `json:"surname"`
-	Phone        string `json:"phone"`
-	RegisterDate string `json:"register_date"`
+type registerGroupRequest struct {
+    Index          int       `json:"index"`
+	Owner          string    `json:"owner"`
+    Name           string    `json:"name"`
+	CreationDate   time.Time `json:"creation_date"`
+	AmountUsers    int       `json:"amount_users"`
+	AmountExpenses int       `json:"amount_expenses"`
 }
 
-type registerUserResponse struct {
-	Token string `json:"token,omitempty"`
-	Err   string `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
+type registerGroupResponse struct {
+	Err   string      `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
-func MakeRegisterUserEndpoint(svc Service) endpoint.Endpoint {
+func MakeRegisterGroupEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request any) (any, error) {
-		req := request.(registerUserRequest)
+		req := request.(registerGroupRequest)
 
-		createdUser := model.User{
-			Username:     req.Username, 
-			Email:        req.Email, 
-			Password:     req.Password,
-			Name:         req.Name, 
-			Surname:      req.Surname, 
-			Phone:        req.Phone,
-			RegisterDate: time.Now(),
+		createdGroup := model.Group{
+            // FIXME: since we are getting the groups by ID, it would be interesting
+            // to change the Index field to ID
+            Index: req.Index,
+            Owner: req.Owner,
+            Name: req.Name,
+            CreationDate: req.CreationDate,
+            AmountUsers: req.AmountUsers,
+            AmountExpenses: req.AmountExpenses,
 		}
 
-		token, err := svc.RegisterUser(ctx, &createdUser)
-		if err != nil {
-			return registerUserResponse{"", err.Error()}, err
+        if err := svc.RegisterGroup(ctx, &createdGroup); err != nil {
+			return registerGroupResponse{err.Error()}, err
 		}
-		return registerUserResponse{token, ""}, err
+		return registerGroupResponse{""}, nil
 	}
 }
 
-type loginUserRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+type deleteGroupRequest struct {
+	ID int `json:"id"`
 }
 
-type loginUserResponse struct {
-	Token string `json:"token,omitempty"`
+type deleteGroupResponse struct {
 	Err   string `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
-func MakeLoginUserEndpoint(svc Service) endpoint.Endpoint {
+func MakeDeleteGroupEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request any) (any, error) {
-		req := request.(loginUserRequest)
-		token, err := svc.LoginUser(ctx, req.Username, req.Password)
+		req := request.(deleteGroupRequest)
+		err := svc.DeleteGroup(ctx, req.ID)
 		if err != nil {
-			return loginUserResponse{"", err.Error()}, err
+			return deleteGroupResponse{err.Error()}, err
 		}
-		return loginUserResponse{token, ""}, err
+		return deleteGroupResponse{""}, err
 	}
 }
 
-type validateTokenRequest struct {
+type getGroupRequest struct {
+	ID int `json:"token"`
+}
+
+type getGroupResponse struct {
+    Group *model.Group `json:"group"`
+	Err   string      `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
+}
+
+func MakeGetGroupEndpoint(svc Service) endpoint.Endpoint {
+	return func(ctx context.Context, request any) (any, error) {
+		req := request.(getGroupRequest)
+
+		group, err := svc.GetGroupByID(ctx, req.ID)
+		if err != nil {
+			return getGroupResponse{nil, err.Error()}, err
+		}
+		return getGroupResponse{group, ""}, err
+	}
+}
+
+type getAllGroupsRequest struct {
 	Token string `json:"token"`
 }
 
-type validateTokenResponse struct {
-	Username string `json:"username,omitempty"`
-	Err      string `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
+type getAllGroupsResponse struct {
+    Groups []model.Group `json:"groups"`
+	Err    string        `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
-func MakeValidateTokenEndpoint(svc Service) endpoint.Endpoint {
+func MakeGetAllGroupsEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request any) (any, error) {
-		req := request.(validateTokenRequest)
+		req := request.(getAllGroupsRequest)
 
-		username, err := svc.ValidateToken(ctx, req.Token)
+		groups, err := svc.GetGroupsFromUser(ctx, req.Token)
 		if err != nil {
-			return validateTokenResponse{"", err.Error()}, err
+			return getAllGroupsResponse{nil, err.Error()}, err
 		}
-		return validateTokenResponse{username, ""}, err
+		return getAllGroupsResponse{groups, ""}, err
 	}
 }
