@@ -1,9 +1,9 @@
-import { View, Text, Button, Pressable } from 'react-native';
+import { View, Text, Button, Pressable, ScrollView } from 'react-native';
 import { Fontisto } from '@expo/vector-icons';
 import styles from './styles/styles.js';
-import theme from './styles/theme.js';
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import theme from './styles/theme.js';
 
 const GroupDetailsScreen = ({route, navigation}) => {
     const { groupName, deleteGroup, groupMembers, username } = route.params;
@@ -18,9 +18,9 @@ const GroupDetailsScreen = ({route, navigation}) => {
                 const expensesJSON = await AsyncStorage.getItem('expenses');
                 const expenses = expensesJSON ? JSON.parse(expensesJSON) : {};
 
-                console.log('expenses')
-                console.log(expenses[groupName])
-                console.log('groupName',groupName);
+                // console.log('expenses')
+                // console.log(expenses[groupName])
+                // console.log('groupName',groupName);
 
                 // Define as despesas no estado local
                 setGroupExpenses(expenses[groupName] || []);
@@ -91,7 +91,7 @@ const GroupDetailsScreen = ({route, navigation}) => {
             // Salva a lista atualizada de despesas no AsyncStorage
             await AsyncStorage.setItem('expenses', JSON.stringify(existingExpenses));
 
-            console.log(existingExpenses);
+            // console.log(existingExpenses);
 
             // Volta para a tela anterior
             navigation.goBack();
@@ -104,6 +104,9 @@ const GroupDetailsScreen = ({route, navigation}) => {
         <View style={styles.containerHome}>
             <View style={styles.groupHeader}>
                 <Text style={styles.title}>{groupName} Group Details</Text>
+                <Pressable onPress={handleDeleteGroup} style={{marginRight: 10}}>
+                    <Fontisto name="trash" size={24} color={theme.md_sys_color_error} />
+                </Pressable>
             </View>
             <Pressable
                 style={styles.createGroupButton}
@@ -124,34 +127,36 @@ const GroupDetailsScreen = ({route, navigation}) => {
                 <Text style={styles.createGroupButtonText}>Pay your expenses</Text>
             </Pressable>
             <Text style={styles.groupExpensesTitle}>Group Expenses:</Text>
-            {userExpenses.length === 0 ? (
-                <Text style={styles.noExpenses}>Any expense available.</Text>
-            ) : (
-                userExpenses.map((expense) => (
-                    <View key={expense.id}>
-                        <Pressable
-                            style={styles.expenseDetailButton}
-                            onPress={() => {
-                                setIsExpenseOpen((prevState) => ({
-                                    ...prevState,
-                                    [expense.id]: !prevState[expense.id],
-                                }));
-                            }}
-                        >
-                            <Text style={styles.createGroupButtonText}>{expense.name}</Text>
-                        </Pressable>
-                        {isExpenseOpen[expense.id] && (
-                            <View>
-                                <Text style={styles.titleExpense}>Expense Details:</Text>
-                                <Text style={styles.fieldExpense}>Name: {expense.name}</Text>
-                                <Text style={styles.fieldExpense}>Total Value: ${expense.amount}</Text>
-                                <Text style={styles.fieldExpense}>Members: {expense.members.join(',')}</Text>
-                                <Text style={styles.fieldExpense}>Value to pay: ${calculateUserShare(expense)}</Text>
-                            </View>
-                        )}
-                    </View>
-                ))
-            )}
+            <ScrollView>
+                {userExpenses.length === 0 ? (
+                    <Text style={styles.noExpenses}>Any expense available.</Text>
+                ) : (
+                    userExpenses.map((expense) => (
+                        <View key={expense.id}>
+                            <Pressable
+                                style={styles.expenseDetailButton}
+                                onPress={() => {
+                                    setIsExpenseOpen((prevState) => ({
+                                        ...prevState,
+                                        [expense.id]: !prevState[expense.id],
+                                    }));
+                                }}
+                            >
+                                <Text style={styles.createGroupButtonText}>{expense.name}</Text>
+                            </Pressable>
+                            {isExpenseOpen[expense.id] && (
+                                <View>
+                                    <Text style={styles.titleExpense}>Expense Details:</Text>
+                                    <Text style={styles.fieldExpense}>Name: {expense.name}</Text>
+                                    <Text style={styles.fieldExpense}>Total Value: ${expense.amount}</Text>
+                                    <Text style={styles.fieldExpense}>Value to pay: ${calculateUserShare(expense)}</Text>
+                                    {/* <Text style={styles.fieldExpense}>Members: {expense.members.join(',')}</Text> */}
+                                </View>
+                            )}
+                        </View>
+                    ))
+                )}
+            </ScrollView>
 
             <Text style={styles.totalGroupExpenses}>Total Group Expenses: ${calculateTotalExpenses()}</Text>
         </View>

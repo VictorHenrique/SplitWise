@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   membersList: {
     marginTop: 8,
     color: theme.md_sys_color_on_primary_container,
-    width: "98%",
+    width: "100%",
   },
   memberNameContainer: {
     justifyContent: "flex-start",
@@ -137,14 +137,14 @@ const styles = StyleSheet.create({
   removeMember: {
     backgroundColor: theme.md_sys_color_tertiary_container,
     margin: 2,
-    width: "100%",
+    width: "99%",
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 5,
   },  
   memberItem: {
     margin: 2,
-    width: "100%",
+    width: "98%",
     flexDirection: 'row',
     alignItems: 'center',
     color: theme.md_sys_color_secondary,
@@ -225,6 +225,117 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontFamily: "Roboto",
     color: theme.md_sys_color_tertiary,
+  },
+  expenseInfos: {
+    width: "100%",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 5,
+    paddingBottom: 5,
+    flexGrow: 1,
+  },
+  expenseImg: {
+    width: "30%",
+    justifyContent: "space-around",
+    // borderWidth: 1,
+    // borderColor: "red"
+  },
+  expenseDetails: {
+    width: "65%",
+  },
+  expenseSharingDetails: {
+    marginTop: 5,
+    padding: 5,
+  },
+  createExpenseContainer: {
+    flex: 1,
+    flexGrow: 0.5,
+    padding: 16,
+    backgroundColor: theme.md_sys_color_background,
+  },
+  expenseMembersContainer : {
+    flex: 1,
+    flexDirection: "column",
+    alignItems: 'center',
+    paddingLeft: 16,
+    paddingRight: 16,
+    backgroundColor: theme.md_sys_color_background,
+    // borderWidth: 2,
+  },
+  searchBarContainer: {
+    // borderWidth: 1,
+    // borderColor: "red",
+    // position: 'absolute',
+    width: "100%",
+    // height: "100%"
+  },
+  listItem: {
+    backgroundColor: theme.md_sys_color_on_tertiary,
+    borderBottomColor: theme.md_sys_color_tertiary,
+    borderBottomWidth: 1,
+    padding: 5,
+    flex: 1,
+    flexDirection: "row",
+    verticalAlign: "middle",
+    // zIndex: -1,
+  },
+  filteredListContainer: {
+    width: "98%",
+    // maxHeight: "98%",
+    zIndex: 1000,
+    overflow: "hidden", 
+    marginLeft: 4, 
+    borderBottomLeftRadius: 10, 
+    borderBottomRightRadius: 10,
+    borderColor: theme.md_sys_color_tertiary,
+    borderWidth: 1,
+    marginTop: -2,
+    borderWidth: 1,
+  },
+  listItemText: {
+    color: "white",
+    marginLeft: 10, 
+    fontSize: 14, 
+    lineHeight: 25,
+    overflow: 'hidden'
+  },
+  memberListContainer: {
+    flexGrow: 0.96,
+    width: "96%",
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+  },
+  membersButton: {
+    marginTop: 10,
+    width: "40%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: theme.md_sys_color_primary,
+    borderRadius: 5,
+    padding: 10,
+    color: theme.md_sys_color_on_primary,
+  },
+  infoContainer: {
+    flexDirection: "row", 
+    width: "100%",
+    justifyContent: "space-between",
+  },
+  bigProfilePic: {
+    borderWidth: 5,
+    borderColor: theme.md_sys_color_primary,
+    borderRadius: 75,
+    width: 150,
+    height: 150,
+    overflow: "hidden",
+  },
+  changeProfilePic: {
+    position: "absolute", 
+    marginLeft: 62, 
+    marginTop: 130,
   }
 });
 

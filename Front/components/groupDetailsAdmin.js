@@ -18,9 +18,9 @@ const GroupDetailsAdminScreen = ({route, navigation}) => {
                 const expensesJSON = await AsyncStorage.getItem('expenses');
                 const expenses = expensesJSON ? JSON.parse(expensesJSON) : {};
 
-                console.log('expenses')
-                console.log(expenses[groupName])
-                console.log('groupName',groupName);
+                // console.log('expenses')
+                // console.log(expenses[groupName])
+                // console.log('groupName',groupName);
 
                 // Define as despesas no estado local
                 setGroupExpenses(expenses[groupName] || []);
@@ -91,7 +91,7 @@ const GroupDetailsAdminScreen = ({route, navigation}) => {
             // Salva a lista atualizada de despesas no AsyncStorage
             await AsyncStorage.setItem('expenses', JSON.stringify(existingExpenses));
 
-            console.log(existingExpenses);
+            // console.log(existingExpenses);
 
             // Volta para a tela anterior
             navigation.goBack();
@@ -130,7 +130,7 @@ const GroupDetailsAdminScreen = ({route, navigation}) => {
             {userExpenses.length === 0 ? (
                 <Text style={styles.noExpenses}>Any expense available.</Text>
             ) : (
-                userExpenses.map((expense) => (
+                userExpenses.map((expense) => {(
                     <View key={expense.id}>
                         <Pressable
                             style={styles.expenseDetailButton}
@@ -148,12 +148,12 @@ const GroupDetailsAdminScreen = ({route, navigation}) => {
                                 <Text style={styles.titleExpense}>Expense Details:</Text>
                                 <Text style={styles.fieldExpense}>Name: {expense.name}</Text>
                                 <Text style={styles.fieldExpense}>Total Value: ${expense.amount}</Text>
-                                <Text style={styles.fieldExpense}>Members: {expense.members.join(',')}</Text>
                                 <Text style={styles.fieldExpense}>Value to pay: ${calculateUserShare(expense)}</Text>
+                                {/* <Text style={styles.fieldExpense}>Members: {expense.members.join(',')}</Text> */}
                             </View>
                         )}
                     </View>
-                ))
+                )})
             )}
 
             <Text style={styles.totalGroupExpenses}>Total Group Expenses: ${calculateTotalExpenses()}</Text>

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { View, Image, Pressable, PermissionsAndroid } from 'react-native';
 import styles from './styles/styles.js';
+import ProfileField from './profileField.js';
+import ImagePicker from 'react-native-image-picker';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const ProfileScreen = () => {
     const [userData, setUserData] = useState({
@@ -11,100 +14,68 @@ const ProfileScreen = () => {
         pix: 'Chave Pix',
         monthlyIncome: 'Sua Renda Mensal',
         password: 'Sua Senha',
+        photo: "https://thispersondoesnotexist.com/"
     });
 
-    const [isEditing, setIsEditing] = useState(false);
-    const [editedData, setEditedData] = useState({ ...userData });
-
-    const toggleEdit = () => {
-        setIsEditing(!isEditing);
+    const openImagePicker = () => {
+        const options = {
+            mediaType: 'photo',
+            includeBase64: false,
+            maxHeight: 2000,
+            maxWidth: 2000,
+        };
+        
+        ImagePicker.launchImageLibrary(options, (response) => {
+            console.log(response);
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                console.log('Image picker error: ', response.error);
+            } else {
+            let imageUri = response.uri || response.assets?.[0]?.uri;
+            console.log(imageUri);
+            // setUserData({...userData, photo: imageUri});
+            }
+        });
     };
 
-    const saveChanges = () => {
-        setUserData({ ...editedData });
-        setIsEditing(false);
-    };
+
+    const handleChangePhoto = async() => {
+        try {
+            const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES, {
+                title: 'Choose from device',
+                message:'Allow gallery access',
+                buttonNeutral: 'Ask Me Later',
+                buttonNegative: 'Cancel',
+                buttonPositive: 'OK',
+            });
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                console.log("ALO")
+                openImagePicker();
+            } else {
+                console.log('Camera permission denied');
+            }
+        } catch (err) {
+            console.warn(err);
+        }
+    }
 
     return (
         <View style={styles.container}>
-            <Text style={styles.label}>Perfil do Usuário</Text>
-            <View>
-                <Text>Nome:</Text>
-                {isEditing ? (
-                    <TextInput
-                        value={editedData.name}
-                        onChangeText={(text) => setEditedData({ ...editedData, name: text })}
-                        style={styles.input}
-                    />
-                ) : (
-                    <Text>{userData.name}</Text>
-                )}
+            <View> 
+                <Image style={styles.bigProfilePic} source={{uri: userData.photo}}/>
+                <Pressable style={styles.changeProfilePic} onPress={handleChangePhoto}>
+                    <MaterialIcons name="add-a-photo" size={24} color="black" />
+                </Pressable>
             </View>
-            <View>
-                <Text>Nome Social:</Text>
-                {isEditing ? (
-                    <TextInput
-                        value={editedData.socialName}
-                        onChangeText={(text) => setEditedData({ ...editedData, socialName: text })}
-                        style={styles.input}
-                    />
-                ) : (
-                    <Text>{userData.socialName}</Text>
-                )}
-            </View>
-            <View>
-                <Text>Email:</Text>
-                {isEditing ? (
-                    <TextInput
-                        value={editedData.email}
-                        onChangeText={(text) => setEditedData({ ...editedData, email: text })}
-                        style={styles.input}
-                    />
-                ) : (
-                    <Text>{userData.email}</Text>
-                )}
-            </View>
-            <View>
-                <Text>Telefone:</Text>
-                {isEditing ? (
-                    <TextInput
-                        value={editedData.phone}
-                        onChangeText={(text) => setEditedData({ ...editedData, phone: text })}
-                        style={styles.input}
-                    />
-                ) : (
-                    <Text>{userData.phone}</Text>
-                )}
-            </View>
-            <View>
-                <Text>Chave Pix:</Text>
-                {isEditing ? (
-                    <TextInput
-                        value={editedData.pix}
-                        onChangeText={(text) => setEditedData({ ...editedData, pix: text })}
-                        style={styles.input}
-                    />
-                ) : (
-                    <Text>{userData.pix}</Text>
-                )}
-            </View>
-            <View>
-                <Text>Renda Mensal:</Text>
-                {isEditing ? (
-                    <TextInput
-                        value={editedData.monthlyIncome}
-                        onChangeText={(text) => setEditedData({ ...editedData, monthlyIncome: text })}
-                        style={styles.input}
-                    />
-                ) : (
-                    <Text>{userData.monthlyIncome}</Text>
-                )}
-            </View>
-            {isEditing ? (
-                <Button title="Salvar Alterações" onPress={saveChanges} />
-            ) : (
-                <Button title="Editar Perfil" onPress={toggleEdit} />
-            )}
+            
+            <ProfileField isEditable={true} fieldName={"name"} label={"Name"} iconName={"idcard"} user={userData} setUser={setUserData} />
+            <ProfileField isEditable={true} fieldName={"socialName"} label={"Social Name"} iconName={"user"} user={userData} setUser={setUserData} />
+            <ProfileField isEditable={true} fieldName={"email"} label={"Email"} iconName={"mail"} user={userData} setUser={setUserData} />
+            <ProfileField isEditable={true} fieldName={"phone"} label={"Phone Number"} iconName={"phone"} user={userData} setUser={setUserData} />
+            <ProfileField isEditable={true} fieldName={"pix"} label={"Pix Key"} iconName={"user"} user={userData} setUser={setUserData} />
+            <ProfileField isEditable={false} fieldName={"monthlyIncome"} label={"Monthly Income"} iconName={"wallet"} user={userData} setUser={setUserData} />
+            <ProfileField isEditable={true} fieldName={"password"} label={"Password"} iconName={"lock"} user={userData} setUser={setUserData} />
         </View>
     );
 };

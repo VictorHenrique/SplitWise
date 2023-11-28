@@ -26,7 +26,7 @@ const TextField: React.FC<Props> = (props) => {
   }, [focusAnimation, isFocused, value])
 
   return (
-    <Animated.View style={[style, styles.inputContainer, {
+    <Animated.View style={[styles.inputContainer, style, {
       borderColor: focusAnimation.interpolate({
         inputRange: [0, 1],
         outputRange: [theme.md_sys_color_outline, theme.md_sys_color_on_tertiary_container],
@@ -65,9 +65,7 @@ const TextField: React.FC<Props> = (props) => {
               setIsFocused(true);
               onFocus?.(event);
             }}
-
             value={value}
-
             style={[styles.input]}
             {...restOfProps}
         />

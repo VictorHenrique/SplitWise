@@ -1,146 +1,147 @@
 import { useState } from "react";
-import { View, Text, Button, Switch } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import styles from './styles/styles.js';
-import { TextInput } from "react-native-gesture-handler";
 import TextField from './TextField.tsx';
 import {v4 as uuidv4 } from 'uuid';
-import { ScrollView } from "react-native";
+import { MaterialIcons } from '@expo/vector-icons';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import theme from "./styles/theme.js";
+import ExpenseMembers from "./expenseMembers.js";
+import ExpenseSharing from "./expenseSharing.js";
 
 const CreateExpenseScreen = ({route, navigation}) => {
-    const { groupName, groupMembers, addExpense } = route.params;
+    const { groupMembers, addExpense } = route.params;
     const [expenseName, setExpenseName] = useState('');
     const [expenseAmount, setExpenseAmount] = useState('');
-    const [selectedMembers, setSelectedMembers] = useState('');
-    const [isRawValue, setIsRawValue] = useState(false);
-    const [individualPayments, setIndividualPayments] = useState({});
+    const [members, setMembers] = useState(new Set());
+    const [sharings, setSharings] = useState([]);
+    const [type, setType] = useState("%");
+    const Tab = createMaterialTopTabNavigator();
 
     const generateUniqueId = () => {
         return uuidv4();
     };
 
-    const handlePaymentChange = (member, text) => {
-        const numericValue = parseFloat(text)
-        if (!isNaN(numericValue)) {
-            setIndividualPayments({...individualPayments, [member]: numericValue});
-        } else {
-            setIndividualPayments({...individualPayments, [member]: 0});
-        }
-    };
+    // const handlePaymentChange = (member, text) => {
+    //     const numericValue = parseFloat(text)
+    //     if (!isNaN(numericValue)) {
+    //         setIndividualPayments({...individualPayments, [member]: numericValue});
+    //     } else {
+    //         setIndividualPayments({...individualPayments, [member]: 0});
+    //     }
+    // };
 
     const handleSubmit = () => {
-        if (!expenseName || !expenseAmount || selectedMembers.length === 0) {
+        if (!expenseName || !expenseAmount || members.size === 0) {
             alert('Preencha todos os campos');
             return;
         }
         const amount = parseFloat(expenseAmount);
         let totalPayment = 0;
-        let payments = {}
-        if (isRawValue) {
-            for (const member of selectedMembers) {
-                totalPayment += individualPayments[member] || 0;
-            }
-            if (totalPayment !== amount) {
-                alert('O valor somado deve ser igual ao valor total da despesa');
+        
+        // 0.15 margin due to decimal approximation
+        Object.values(sharings).forEach((value) => totalPayment += parseFloat(value));
+        if (type === '%') {
+            if (Math.abs(totalPayment - 100.0) > 0.15) {
+                alert('The sum of sharing should be 100%');
                 return;
             }
-            payments = individualPayments;
         } else {
-            for (const member of selectedMembers) {
-                totalPayment += individualPayments[member] || 0;
-            }
-            if (totalPayment !== 100) {
-                alert('O valor somado deve ser igual a 100%');
+            if (Math.abs(totalPayment - expenseAmount) > 0.15) {
+                alert('The expenses sum should be $' + expenseAmount + ". Instead, sum is $"+ totalPayment);
                 return;
-            }
-            for (const member of selectedMembers) {
-                payments[member] = (individualPayments[member] * amount) / 100;
             }
         }
+        
+        let users = [];
+        let paymentsPerUser = {};
+        
+        Array.from(members).map((idx) => {
+            const member = groupMembers[parseInt(idx)];
+            const value = sharings[idx];
+            if (value == 0.0)
+                return
+            paymentsPerUser[member] = type === '%' ? (expenseAmount * parseFloat(value) / 100) : value;
+            users.push(member); 
+        });
 
         const newExpense = {
             id: generateUniqueId(),
             name: expenseName,
             amount: amount,
-            members: selectedMembers,
-            individualPayments: payments,
+            members: [...users],
+            individualPayments: paymentsPerUser,
         };
+
 
         addExpense(newExpense);
 
         navigation.goBack();
     };
 
-    const toggleMemberSelection = (member) => {
-        if (selectedMembers.includes(member)) {
-            setSelectedMembers(selectedMembers.filter((m) => m !== member));
-        } else {
-            setSelectedMembers([...selectedMembers, member]);
-        }
-    };
-
-    const percentageLabelStyle = {
-        marginRight: 5,
-        color: isRawValue ? 'gray' : 'black',
-    };
-
-    const rawValueLabelStyle = {
-        marginLeft: 5,
-        color: isRawValue ? 'black' : 'gray',
-    };
-
     return (
-        <ScrollView style={styles.containerHome}>
-            <View style={styles.groupHeader}>
-                <Text style={styles.title}>Create new expense in {groupName}</Text>
-            </View>
-            <TextField
-                value={expenseName}
-                label='Expense Name'
-                iconName='bank'
-                iconSize={24}
-                onChangeText={(text) => setExpenseName(text)}
-            />
-            <TextField
-                value={expenseAmount}
-                label='Expense Amount'
-                iconName='bank'
-                iconSize={24}
-                onChangeText={(text) => setExpenseAmount(text)}
-                keyboardType="numeric"
-            />
-            <Text style={styles.label}>Values in:</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Text style={percentageLabelStyle}>
-                    {isRawValue ? '' : 'Porcentagem'}
-                </Text>
-                <Switch
-                    value={isRawValue}
-                    onValueChange={(value) => setIsRawValue(value)}
-                />
-                <Text style={rawValueLabelStyle}>
-                    {isRawValue ? 'Bruto' : ''}
-                </Text>
-            </View>
-            <Text style={styles.label}>Membros Envolvidos:</Text>
-            {groupMembers.map((member) => (
-                <View key={member}>
-                    <Text styles={styles.username}>{member}</Text>
-                    <Button
-                        title={selectedMembers.includes(member) ? 'Selecionado' : 'Selecionar'}
-                        onPress={() => toggleMemberSelection(member)}
-                    />
-                    <TextInput
-                        placeholder={`Valor para ${member}`}
-                        value={individualPayments[member] ? individualPayments[member].toString() : ""}
-                        onChangeText={(text) => handlePaymentChange(member, parseFloat(text))}
-                        style={styles.inputCreateGroup}
-                        keyboardType="numeric"
-                    />
+        <>
+            <View style={styles.createExpenseContainer} behavior="padding">
+                <View style={styles.groupHeader}>
+                    <Text style={styles.title}>New Expense</Text>
+                    <Pressable onPress={handleSubmit} style={{marginRight: 10}}>
+                        <MaterialIcons name="check" size={30} color="green" />
+                    </Pressable>
                 </View>
-            ))}
-            <Button title="Criar Despesa" onPress={handleSubmit}/>
-        </ScrollView>
-    )
+                
+                <View style={styles.expenseInfos}>
+                    {/* Expense photo */}
+                    <View style={styles.expenseImg}>
+                        <MaterialIcons name="add-a-photo" size={100} color="black" />
+                    </View>
+
+                    {/* Expense details */}
+                    <View style={styles.expenseDetails}>
+                        <TextField
+                            value={expenseName}
+                            label='Name'
+                            iconName='form'
+                            iconSize={24}
+                            onChangeText={(text) => setExpenseName(text)}
+                        />
+                        <TextField
+                            value={expenseAmount}
+                            label='Value'
+                            iconName='wallet'
+                            iconSize={24}
+                            onChangeText={(text) => setExpenseAmount(text)}
+                            keyboardType="numeric"
+                        />
+                    </View>
+                </View>
+            </View>
+
+            <Tab.Navigator style={{bottom: 0}} initialRouteName="expenses" screenOptions={{
+                tabBarLabelStyle: { color: theme.md_sys_color_on_background },
+                tabBarStyle: { backgroundColor: theme.md_sys_color_background, width: "100%" },
+                swipeEnabled: true,
+                tabBarHideOnKeyboard: true
+            }}>
+
+                <Tab.Screen name="Participants" children={()=> <ExpenseMembers 
+                        members={members} 
+                        setMembers={setMembers} 
+                        groupMembers={groupMembers}
+                    />} 
+                />
+                <Tab.Screen name="Sharing" children={()=> <ExpenseSharing 
+                        type={type}
+                        setType={setType}
+                        groupMembers={groupMembers}
+                        members={members} 
+                        sharings={sharings}
+                        total={expenseAmount}
+                        setSharings={setSharings}
+                    />} 
+                />
+            </Tab.Navigator>
+        </>
+    );
 }
 
 export default CreateExpenseScreen;

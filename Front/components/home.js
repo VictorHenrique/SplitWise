@@ -10,13 +10,29 @@ const HomeScreen = ({navigation}) => {
     const route = useRoute();
     const { username } = route.params;
     const [groups, setGroups] = useState({
-        "Group 1":["amigo1", "amigo2", "owner1"],
-        "Group 2":["amigo3", "amigo4", "owner2"],
-        "Group 3":["amigo5", "amigo6", "owner3"]}
-    );
-
+        "Group 1":[
+            "g1_a", "aaa", "vasd", "c", "vasco", "Pollie", "Niklas", "Hidayat", "Sneha", "Mairead", "Ramkrishna", 
+            "Harta", "Portia", "Iuppiter", "Nazir" , "Brynja", "Andrew", "Madhavi", "Spartak", "Sacnicte" 
+        ],
+        "Group 2":[
+            "g2_a", "aaa", "vasd", "c", "vasco", "Pollie", "Niklas", "Hidayat", "Sneha", "Mairead", "Ramkrishna", 
+            "Harta", "Portia", "Iuppiter", "Nazir" , "Brynja", "Andrew", "Madhavi", "Spartak", "Sacnicte" 
+        ],
+        "Group 3":[
+            "g3_a", "aaa", "vasd", "c", "vasco", "Pollie", "Niklas", "Hidayat", "Sneha", "Mairead", "Ramkrishna", 
+            "Harta", "Portia", "Iuppiter", "Nazir" , "Brynja", "Andrew", "Madhavi", "Spartak", "Sacnicte" 
+        ],
+    });
+    
     const addGroup = (newGroup) => {
-        setGroups({...groups, [newGroup.groupName]: newGroup.members});
+        const groupname = newGroup.groupName;
+        const members = newGroup.members; 
+        let group = {...groups}
+        group[groupname] = members;
+        
+        console.log(group);
+
+        setGroups(group);
     };
 
     const deleteGroup = (groupName) => {

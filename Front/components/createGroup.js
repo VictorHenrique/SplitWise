@@ -7,7 +7,6 @@ import theme from './styles/theme.js';
 import styles from './styles/styles.js';
 
 const CreateGroupScreen = ({navigation}) => {
-    const profilePicSize = 50;
     const route = useRoute();
     const { addGroup, username } = route.params;
     const [groupName, setGroupName] = useState('');
@@ -15,6 +14,7 @@ const CreateGroupScreen = ({navigation}) => {
     const [newMember, setNewMember] = useState('');
     const [nxtIdx, setNxtIdx] = useState([[0, true]]);
     const [selected, setSelected] = useState(-1);
+    const profilePicSize = 50;
     const dummyPic = 'https://thispersondoesnotexist.com/';
 
     const getIndex = () => {
@@ -27,7 +27,11 @@ const CreateGroupScreen = ({navigation}) => {
     };
 
     const handleSubmit = () => {
-        const newGroup = {groupName, members: [...members, username]};
+        const newGroup = {
+            groupName: groupName, 
+            members: Object.values(members)
+        };
+        
         if (groupName === '') {
             alert('Nome do grupo invalido');
             return;
