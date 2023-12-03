@@ -122,7 +122,7 @@ func (r *Repository) GetAllExpensesFromUser(ctx context.Context, username string
 }
 
 func (r *Repository) CreateExpense(ctx context.Context, expense *model.Expense) error {
-	query := "INSERT INTO expense (id, payee, amount, pay_date, description, title, group_id) VALUES ($1, $2, $3, $4, $5, $6)"
+	query := "INSERT INTO expense (id, payee, amount, pay_date, description, title, group_id) VALUES ($1, $2, $3, $4, $5, $6 $7)"
 	_, err := r.db.Exec(query, expense.ID, expense.Owner, expense.Name, expense.CreationDate, expense.AmountUsers, expense.AmountExpenses)
 
 	return err
