@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	kitlog "github.com/go-kit/log"
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
+	kitlog "github.com/go-kit/log"
 	"github.com/gorilla/mux"
 )
 
@@ -55,7 +55,7 @@ func NewHttpServer(svc Service, logger kitlog.Logger) *mux.Router {
 
 	r := mux.NewRouter()
 	r.Methods("POST").Path("/register-expense").Handler(registerExpenseHandler)
-    r.Methods("DELETE").Path("/delete-expense").Handler(deleteExpenseHandler)
+	r.Methods("DELETE").Path("/delete-expense").Handler(deleteExpenseHandler)
 	r.Methods("GET").Path("/get-expense").Handler(getExpenseHandler)
 	r.Methods("GET").Path("/get-all-expenses-from-group").Handler(getAllExpensesFromGroupHandler)
 	r.Methods("GET").Path("/get-all-expenses-from-user").Handler(getAllExpensesFromUserHandler)

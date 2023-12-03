@@ -18,7 +18,7 @@ type registerGroupRequest struct {
 }
 
 type registerGroupResponse struct {
-	Err   string      `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
+	Err string `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
 func MakeRegisterGroupEndpoint(svc Service) endpoint.Endpoint {
@@ -26,11 +26,11 @@ func MakeRegisterGroupEndpoint(svc Service) endpoint.Endpoint {
 		req := request.(registerGroupRequest)
 
 		createdGroup := model.Group{
-			ID: req.ID,
-			Owner: req.Owner,
-			Name: req.Name,
-			CreationDate: req.CreationDate,
-			AmountUsers: req.AmountUsers,
+			ID:             req.ID,
+			Owner:          req.Owner,
+			Name:           req.Name,
+			CreationDate:   req.CreationDate,
+			AmountUsers:    req.AmountUsers,
 			AmountExpenses: req.AmountExpenses,
 		}
 
@@ -46,7 +46,7 @@ type deleteGroupRequest struct {
 }
 
 type deleteGroupResponse struct {
-	Err   string `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
+	Err string `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
 func MakeDeleteGroupEndpoint(svc Service) endpoint.Endpoint {

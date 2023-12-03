@@ -1,16 +1,17 @@
 package user
 
 import (
-	"time"
-	"context"
 	"auth/pkg/model"
+	"context"
+	"time"
+
 	"github.com/go-kit/kit/endpoint"
 )
 
 type registerUserRequest struct {
-    Username     string `json:"username"`
+	Username     string `json:"username"`
 	Email        string `json:"email"`
-    Password     string `json:"password"`
+	Password     string `json:"password"`
 	Name         string `json:"name"`
 	Surname      string `json:"surname"`
 	Phone        string `json:"phone"`
@@ -27,11 +28,11 @@ func MakeRegisterUserEndpoint(svc Service) endpoint.Endpoint {
 		req := request.(registerUserRequest)
 
 		createdUser := model.User{
-			Username:     req.Username, 
-			Email:        req.Email, 
+			Username:     req.Username,
+			Email:        req.Email,
 			Password:     req.Password,
-			Name:         req.Name, 
-			Surname:      req.Surname, 
+			Name:         req.Name,
+			Surname:      req.Surname,
 			Phone:        req.Phone,
 			RegisterDate: time.Now(),
 		}

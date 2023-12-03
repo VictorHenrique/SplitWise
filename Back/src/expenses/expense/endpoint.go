@@ -8,15 +8,14 @@ import (
 	"github.com/go-kit/kit/endpoint"
 )
 
-
 type registerExpenseRequest struct {
-    ID          int       `json:"id"`
-    Payee       string    `json:"payee"`
-    Amount      int       `json:"amount"`
-    PayDate     time.Time `json:"pay_date"`
-    Description string    `json:"description"`
-    Title       string    `json:"title"`
-    GroupId     string    `json:"group_id"`
+	ID          int       `json:"id"`
+	Payee       string    `json:"payee"`
+	Amount      int       `json:"amount"`
+	PayDate     time.Time `json:"pay_date"`
+	Description string    `json:"description"`
+	Title       string    `json:"title"`
+	GroupId     string    `json:"group_id"`
 }
 
 type registerExpenseResponse struct {
@@ -28,16 +27,16 @@ func MakeRegisterExpenseEndpoint(svc Service) endpoint.Endpoint {
 		req := request.(registerExpenseRequest)
 
 		createdExpense := model.Expense{
-			ID: req.ID,
-            Payee: req.Payee,
-            Amount: req.Amount,
-            PayDate: req.PayDate,
-            Description: req.Description,
-            Title: req.Title,
-            GroupId: req.GroupId,
+			ID:          req.ID,
+			Payee:       req.Payee,
+			Amount:      req.Amount,
+			PayDate:     req.PayDate,
+			Description: req.Description,
+			Title:       req.Title,
+			GroupId:     req.GroupId,
 		}
 
-        if err := svc.RegisterGroup(ctx, &createdGroup); err != nil {
+		if err := svc.RegisterGroup(ctx, &createdGroup); err != nil {
 			return registerExpenseResponse{err.Error()}, err
 		}
 		return registerExpenseResponse{""}, nil
@@ -49,7 +48,7 @@ type deleteExpenseRequest struct {
 }
 
 type deleteExpenseResponse struct {
-	Err   string `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
+	Err string `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
 func MakeDeleteExpenseEndpoint(svc Service) endpoint.Endpoint {
@@ -68,7 +67,7 @@ type getExpenseRequest struct {
 }
 
 type getExpenseResponse struct {
-    Expense *model.Expense `json:"expense"`
+	Expense *model.Expense `json:"expense"`
 	Err     string         `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
@@ -89,7 +88,7 @@ type getAllExpensesFromGroupRequest struct {
 }
 
 type getAllExpensesFromGroupResponse struct {
-    Expenses []model.Expense `json:"expenses"`
+	Expenses []model.Expense `json:"expenses"`
 	Err      string          `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
@@ -110,7 +109,7 @@ type getAllExpensesFromUserRequest struct {
 }
 
 type getAllExpensesFromUserResponse struct {
-    Expenses []model.Expense `json:"expenses"`
+	Expenses []model.Expense `json:"expenses"`
 	Err      string          `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 

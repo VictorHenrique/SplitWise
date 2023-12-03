@@ -1,11 +1,11 @@
 package user
 
 import (
+	"auth/pkg/model"
 	"auth/security"
 	"context"
-	"errors"
-    "auth/pkg/model"
 	"database/sql"
+	"errors"
 )
 
 type Service interface {
@@ -15,8 +15,8 @@ type Service interface {
 }
 
 type authRepository interface {
-    GetUserByUsername(ctx context.Context, username string) (*model.User, error)
-    CreateUser(ctx context.Context, user *model.User) error
+	GetUserByUsername(ctx context.Context, username string) (*model.User, error)
+	CreateUser(ctx context.Context, user *model.User) error
 	GetAllUsers(_ context.Context) ([]model.User, error)
 	CloseDB() error
 }
@@ -27,12 +27,12 @@ var (
 	ErrInvalidToken  = errors.New("invalid token")
 )
 
-type service struct{
+type service struct {
 	repo authRepository
 }
 
 func NewService(userRepo authRepository) *service {
-	return &service {repo: userRepo}
+	return &service{repo: userRepo}
 }
 
 func (s *service) RegisterUser(ctx context.Context, createdUser *model.User) (string, error) {
@@ -51,7 +51,7 @@ func (s *service) RegisterUser(ctx context.Context, createdUser *model.User) (st
 
 func (s *service) LoginUser(ctx context.Context, username, password string) (string, error) {
 	user, err := s.repo.GetUserByUsername(ctx, username)
-	if user == nil || err == sql.ErrNoRows || user.Password != password  {
+	if user == nil || err == sql.ErrNoRows || user.Password != password {
 		return "", ErrInvalidUser
 	}
 
@@ -59,6 +59,7 @@ func (s *service) LoginUser(ctx context.Context, username, password string) (str
 	if err != nil {
 		return "", err
 	}
+
 	return token, nil
 }
 

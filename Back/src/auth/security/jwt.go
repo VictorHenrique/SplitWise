@@ -8,19 +8,19 @@ import (
 )
 
 const (
-	JWTSecret   = "d7830ad5791dsdsds"
-	JwtExpHour  =1
-	JwtExpMin = 0
-	JwtExpSec = 30
+	JWTSecret  = "d7830ad5791dsdsds"
+	JwtExpHour = 1
+	JwtExpMin  = 0
+	JwtExpSec  = 30
 )
 
-//NewToken create a new token
+// NewToken create a new token
 func NewToken(username string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username":   username,
-		"nbf":        time.Now().Unix(),
-		"iat":        time.Now().Unix(),
-		"exp":        time.Now().Local().Add(time.Hour*time.Duration(JwtExpHour) + time.Minute*time.Duration(JwtExpMin) + time.Second*time.Duration(JwtExpSec)).Unix(),
+		"username": username,
+		"nbf":      time.Now().Unix(),
+		"iat":      time.Now().Unix(),
+		"exp":      time.Now().Local().Add(time.Hour*time.Duration(JwtExpHour) + time.Minute*time.Duration(JwtExpMin) + time.Second*time.Duration(JwtExpSec)).Unix(),
 	})
 	// Sign and get the complete encoded token as a string using the secret
 	sToken, err := token.SignedString([]byte(JWTSecret))
@@ -31,7 +31,7 @@ func NewToken(username string) (string, error) {
 	return sToken, nil
 }
 
-//ParseToken parse a token
+// ParseToken parse a token
 func ParseToken(tokenString string) (*jwt.Token, error) {
 	var token *jwt.Token
 	var err error
@@ -53,7 +53,7 @@ func parseHS256(tokenString string, token *jwt.Token) (*jwt.Token, error) {
 	return token, err
 }
 
-//GetClaims get claims information
+// GetClaims get claims information
 func GetClaims(token *jwt.Token) (jwt.MapClaims, error) {
 	if !token.Valid {
 		return nil, fmt.Errorf("unauthorized")
