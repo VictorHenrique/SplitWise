@@ -28,12 +28,12 @@ func NewDB(db *sql.DB) *Repository {
 }
 
 func (r *Repository) GetGroupByID(ctx context.Context, groupID int) (*model.Group, error) {
-    query := "SELECT * FROM users_group WHERE index = $1"
+    query := "SELECT * FROM users_group WHERE id = $1"
     row := r.db.QueryRow(query, groupID)
 
     group := &model.Group{}
     err := row.Scan(
-        &group.Index,
+        &group.ID,
         &group.Name,
         &group.Owner,
         &group.AmountUsers,
@@ -48,7 +48,7 @@ func (r *Repository) GetGroupByID(ctx context.Context, groupID int) (*model.Grou
 
 func (r *Repository) GetAllGroupsFromUser(ctx context.Context, username string) ([]model.Group, error) {
     query := `
-        SELECT index, owner, name, creation_date, amount_users, amount_expenses
+        SELECT id, owner, name, creation_date, amount_users, amount_expenses
         FROM users_group
         WHERE owner = $1
     `
@@ -62,7 +62,7 @@ func (r *Repository) GetAllGroupsFromUser(ctx context.Context, username string) 
     for rows.Next() {
         var group model.Group
         err := rows.Scan(
-            &group.Index,
+            &group.ID,
             &group.Owner,
             &group.Name,
             &group.CreationDate,
@@ -83,14 +83,14 @@ func (r *Repository) GetAllGroupsFromUser(ctx context.Context, username string) 
 }
 
 func (r *Repository) CreateGroup(ctx context.Context, group *model.Group) error {
-    query := "INSERT INTO users_group (index, owner, name, creation_date, amount_users, amount_expenses) VALUES ($1, $2, $3, $4, $5, $6)"
-    _, err := r.db.Exec(query, group.Index, group.Owner, group.Name, group.CreationDate, group.AmountUsers, group.AmountExpenses)
+    query := "INSERT INTO users_group (id, owner, name, creation_date, amount_users, amount_expenses) VALUES ($1, $2, $3, $4, $5, $6)"
+    _, err := r.db.Exec(query, group.ID, group.Owner, group.Name, group.CreationDate, group.AmountUsers, group.AmountExpenses)
 
     return err
 }
 
 func (r *Repository) DeleteGroup(ctx context.Context, groupID int) error {
-    query := "DELETE FROM users_group WHERE index = $1"
+    query := "DELETE FROM users_group WHERE id = $1"
     _, err := r.db.Exec(query, groupID)
 
     return err

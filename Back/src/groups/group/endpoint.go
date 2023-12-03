@@ -9,9 +9,9 @@ import (
 )
 
 type registerGroupRequest struct {
-    Index          int       `json:"index"`
+	ID             int       `json:"id"`
 	Owner          string    `json:"owner"`
-    Name           string    `json:"name"`
+	Name           string    `json:"name"`
 	CreationDate   time.Time `json:"creation_date"`
 	AmountUsers    int       `json:"amount_users"`
 	AmountExpenses int       `json:"amount_expenses"`
@@ -26,17 +26,15 @@ func MakeRegisterGroupEndpoint(svc Service) endpoint.Endpoint {
 		req := request.(registerGroupRequest)
 
 		createdGroup := model.Group{
-            // FIXME: since we are getting the groups by ID, it would be interesting
-            // to change the Index field to ID
-            Index: req.Index,
-            Owner: req.Owner,
-            Name: req.Name,
-            CreationDate: req.CreationDate,
-            AmountUsers: req.AmountUsers,
-            AmountExpenses: req.AmountExpenses,
+			ID: req.ID,
+			Owner: req.Owner,
+			Name: req.Name,
+			CreationDate: req.CreationDate,
+			AmountUsers: req.AmountUsers,
+			AmountExpenses: req.AmountExpenses,
 		}
 
-        if err := svc.RegisterGroup(ctx, &createdGroup); err != nil {
+		if err := svc.RegisterGroup(ctx, &createdGroup); err != nil {
 			return registerGroupResponse{err.Error()}, err
 		}
 		return registerGroupResponse{""}, nil
@@ -63,12 +61,12 @@ func MakeDeleteGroupEndpoint(svc Service) endpoint.Endpoint {
 }
 
 type getGroupRequest struct {
-	ID int `json:"token"`
+	ID int `json:"id"`
 }
 
 type getGroupResponse struct {
-    Group *model.Group `json:"group"`
-	Err   string      `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
+	Group *model.Group `json:"group"`
+	Err   string       `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
 func MakeGetGroupEndpoint(svc Service) endpoint.Endpoint {
@@ -88,7 +86,7 @@ type getAllGroupsRequest struct {
 }
 
 type getAllGroupsResponse struct {
-    Groups []model.Group `json:"groups"`
+	Groups []model.Group `json:"groups"`
 	Err    string        `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 

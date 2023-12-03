@@ -18,28 +18,28 @@ CREATE TABLE user_account (
 
 
 CREATE TABLE users_group (
-	index           SERIAL,
+	id              SERIAL,
 	owner           VARCHAR(255) NOT NULL,
 	name            VARCHAR(255) NOT NULL,
 	creation_date   TIMESTAMP WITH TIME ZONE NOT NULL,
 	amount_users    INT NOT NULL,
 	amount_expenses INT,
 	
-	CONSTRAINT pk_group PRIMARY KEY (index),
+	CONSTRAINT pk_group PRIMARY KEY (id),
 	CONSTRAINT sk_group UNIQUE (owner, name, creation_date),
 	CONSTRAINT fk_group FOREIGN KEY (owner) REFERENCES user_account(username)
 );
 
 CREATE TABLE expense (
-	index         SERIAL,
-	payee         VARCHAR(255),
-	amount        MONEY NOT NULL,
-	pay_date      TIMESTAMP WITH TIME ZONE,
-	description   VARCHAR(255),
-	title         VARCHAR(255) NOT NULL,
-	group_id      INTEGER NOT NULL,
+	id          SERIAL,
+	payee       VARCHAR(255),
+	amount      MONEY NOT NULL,
+	pay_date    TIMESTAMP WITH TIME ZONE,
+	description VARCHAR(255),
+	title       VARCHAR(255) NOT NULL,
+	group_id    INTEGER NOT NULL,
 	
-	CONSTRAINT pk_expense PRIMARY KEY (index),
+	CONSTRAINT pk_expense PRIMARY KEY (id),
 	CONSTRAINT sk_expense UNIQUE (payee, group_id, pay_date)
 );
 
@@ -49,16 +49,16 @@ CREATE TABLE user_in_group (
 	
 	CONSTRAINT pk_user_in_group PRIMARY KEY (username, group_id),
 	CONSTRAINT fk_user FOREIGN KEY (username) REFERENCES user_account(username),
-	CONSTRAINT fk_group FOREIGN KEY (group_id) REFERENCES users_group(index)
+	CONSTRAINT fk_group FOREIGN KEY (group_id) REFERENCES users_group(id)
 );
 
 CREATE TABLE user_dues (
-	username     VARCHAR(255),
-	expense_id   INT,
-	pct          REAL,
-	is_payed     BOOLEAN,
+	username   VARCHAR(255),
+	expense_id INT,
+	pct        REAL,
+	is_payed   BOOLEAN,
 	
 	CONSTRAINT pk_user_dues PRIMARY KEY (username, expense_id),
 	CONSTRAINT fk_user FOREIGN KEY (username) REFERENCES user_account(username),
-	CONSTRAINT fk_expense FOREIGN KEY (expense_id) REFERENCES expense(index)
+	CONSTRAINT fk_expense FOREIGN KEY (expense_id) REFERENCES expense(id)
 );

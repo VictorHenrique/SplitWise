@@ -26,8 +26,8 @@ type groupRepository interface {
 
 var (
 	ErrDuplicatedGroup = errors.New("duplicate group")
-	ErrInvalidGroup   = errors.New("invalid group")
-	ErrInvalidToken   = errors.New("invalid token")
+	ErrInvalidGroup    = errors.New("invalid group")
+	ErrInvalidToken    = errors.New("invalid token")
 )
 
 type service struct{
