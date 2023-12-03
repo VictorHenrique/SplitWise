@@ -62,3 +62,10 @@ CREATE TABLE user_dues (
 	CONSTRAINT fk_user FOREIGN KEY (username) REFERENCES user_account(username),
 	CONSTRAINT fk_expense FOREIGN KEY (expense_id) REFERENCES expense(id)
 );
+
+CREATE TABLE user_conections (
+	username1 VARCHAR(255),
+	username2 VARCHAR(255),
+	
+	CONSTRAINT pk_user_conections PRIMARY KEY (username1, username2)e(id)
+);
