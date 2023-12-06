@@ -22,9 +22,7 @@ CREATE TABLE users_group (
 	owner           VARCHAR(255) NOT NULL,
 	name            VARCHAR(255) NOT NULL,
 	creation_date   TIMESTAMP WITH TIME ZONE NOT NULL,
-	amount_users    INT NOT NULL,
-	amount_expenses INT,
-	
+
 	CONSTRAINT pk_group PRIMARY KEY (id),
 	CONSTRAINT sk_group UNIQUE (owner, name, creation_date),
 	CONSTRAINT fk_group FOREIGN KEY (owner) REFERENCES user_account(username)
@@ -55,7 +53,7 @@ CREATE TABLE user_in_group (
 CREATE TABLE user_dues (
 	username   VARCHAR(255),
 	expense_id INT,
-	pct        REAL,
+	amount     REAL,
 	is_payed   BOOLEAN,
 	
 	CONSTRAINT pk_user_dues PRIMARY KEY (username, expense_id),
@@ -63,9 +61,9 @@ CREATE TABLE user_dues (
 	CONSTRAINT fk_expense FOREIGN KEY (expense_id) REFERENCES expense(id)
 );
 
-CREATE TABLE user_conections (
+CREATE TABLE user_connections (
 	username1 VARCHAR(255),
 	username2 VARCHAR(255),
 	
-	CONSTRAINT pk_user_conections PRIMARY KEY (username1, username2)e(id)
+	CONSTRAINT pk_user_connections PRIMARY KEY (username1, username2)e(id)
 );

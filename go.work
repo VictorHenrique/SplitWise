@@ -3,7 +3,7 @@ go 1.19
 use (
 	./Back/src
 	./Back/src/auth
-	./Back/src/conections
+	./Back/src/connections
 	./Back/src/expenses
 	./Back/src/groups
 )
