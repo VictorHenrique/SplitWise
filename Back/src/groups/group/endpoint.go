@@ -9,12 +9,11 @@ import (
 )
 
 type registerGroupRequest struct {
-	ID             int       `json:"id"`
-	Owner          string    `json:"owner"`
-	Name           string    `json:"name"`
-	CreationDate   time.Time `json:"creation_date"`
-	AmountUsers    int       `json:"amount_users"`
-	AmountExpenses int       `json:"amount_expenses"`
+	ID               int       `json:"id"`
+	Owner            string    `json:"owner"`
+	Name             string    `json:"name"`
+	CreationDate     time.Time `json:"creation_date"`
+	MembersUsernames []string  `json:"members_username"`
 }
 
 type registerGroupResponse struct {
@@ -26,15 +25,13 @@ func MakeRegisterGroupEndpoint(svc Service) endpoint.Endpoint {
 		req := request.(registerGroupRequest)
 
 		createdGroup := model.Group{
-			ID:             req.ID,
-			Owner:          req.Owner,
-			Name:           req.Name,
-			CreationDate:   req.CreationDate,
-			AmountUsers:    req.AmountUsers,
-			AmountExpenses: req.AmountExpenses,
+			ID:           req.ID,
+			Owner:        req.Owner,
+			Name:         req.Name,
+			CreationDate: req.CreationDate,
 		}
 
-		if err := svc.RegisterGroup(ctx, &createdGroup); err != nil {
+		if err := svc.RegisterGroup(ctx, &createdGroup, req.MembersUsernames); err != nil {
 			return registerGroupResponse{err.Error()}, err
 		}
 		return registerGroupResponse{""}, nil

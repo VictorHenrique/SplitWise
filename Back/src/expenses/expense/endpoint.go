@@ -9,13 +9,14 @@ import (
 )
 
 type registerExpenseRequest struct {
-	ID          int       `json:"id"`
-	Payee       string    `json:"payee"`
-	Amount      int       `json:"amount"`
-	PayDate     time.Time `json:"pay_date"`
-	Description string    `json:"description"`
-	Title       string    `json:"title"`
-	GroupId     string    `json:"group_id"`
+	ID               int       `json:"id"`
+	Payee            string    `json:"payee"`
+	Amount           int       `json:"amount"`
+	PayDate          time.Time `json:"pay_date"`
+	Description      string    `json:"description"`
+	Title            string    `json:"title"`
+	GroupId          string    `json:"group_id"`
+	DebtorsUsernames []string  `json:"debtors_usernames"`
 }
 
 type registerExpenseResponse struct {
@@ -36,7 +37,7 @@ func MakeRegisterExpenseEndpoint(svc Service) endpoint.Endpoint {
 			GroupId:     req.GroupId,
 		}
 
-		if err := svc.RegisterGroup(ctx, &createdGroup); err != nil {
+		if err := svc.RegisterGroup(ctx, &createdGroup, req.DebtorsUsernames); err != nil {
 			return registerExpenseResponse{err.Error()}, err
 		}
 		return registerExpenseResponse{""}, nil

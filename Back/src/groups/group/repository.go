@@ -35,8 +35,6 @@ func (r *Repository) GetGroupByID(ctx context.Context, groupID int) (*model.Grou
 		&group.ID,
 		&group.Name,
 		&group.Owner,
-		&group.AmountUsers,
-		&group.AmountExpenses,
 		&group.CreationDate,
 	)
 	if err != nil {
@@ -65,8 +63,6 @@ func (r *Repository) GetAllGroupsFromUser(ctx context.Context, username string) 
 			&group.Owner,
 			&group.Name,
 			&group.CreationDate,
-			&group.AmountUsers,
-			&group.AmountExpenses,
 		)
 		if err != nil {
 			return nil, err
@@ -81,11 +77,25 @@ func (r *Repository) GetAllGroupsFromUser(ctx context.Context, username string) 
 	return groups, nil
 }
 
-func (r *Repository) CreateGroup(ctx context.Context, group *model.Group) error {
-	query := "INSERT INTO users_group (id, owner, name, creation_date, amount_users, amount_expenses) VALUES ($1, $2, $3, $4, $5, $6)"
-	_, err := r.db.Exec(query, group.ID, group.Owner, group.Name, group.CreationDate, group.AmountUsers, group.AmountExpenses)
+func (r *Repository) CreateGroup(ctx context.Context, group *model.Group, []string membersUsernames) error {
+	query := "INSERT INTO users_group (id, owner, name, creation_date) VALUES ($1, $2, $3, $4)"
+	_, err := r.db.Exec(query, group.ID, group.Owner, group.Name, group.CreationDate)
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	membersUsernames = append(membersUsernames, group.Owner)
+
+	query = "INSERT INTO user_in_group (username, group_id) VALUES ($1, $2)"
+	for _, username := range membersUsernames {
+		_, err := r.db.Exec(query, username, group.ID)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (r *Repository) DeleteGroup(ctx context.Context, groupID int) error {

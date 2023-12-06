@@ -13,13 +13,13 @@ type Service interface {
 	GetExpenseByID(ctx context.Context, expenseID int) (*model.Expense, error)
 	GetExpensesFromGroup(ctx context.Context, id int) ([]model.Expense, error)
 	GetExpensesFromUser(ctx context.Context, token string) ([]model.Expense, error)
-	RegisterExpense(ctx context.Context, createdExpense *model.Expense) error
+	RegisterExpense(ctx context.Context, createdExpense *model.Expense, []string debtorsUsernames) error
 	DeleteExpense(ctx context.Context, expenseID int) error
 }
 
 type expenseRepository interface {
 	GetExpenseByID(ctx context.Context, expenseID int) (*model.Expense, error)
-	CreateExpense(ctx context.Context, expense *model.Expense) error
+	CreateExpense(ctx context.Context, expense *model.Expense, []string debtorsUsernames) error
 	DeleteExpense(ctx context.Context, expenseID int) error
 	GetAllExpensesFromGroup(ctx context.Context, groupID int) ([]model.Expense, error)
 	GetAllExpensesFromUser(ctx context.Context, username string) ([]model.Expense, error)
@@ -88,8 +88,8 @@ func (s *service) GetExpensesFromUser(ctx context.Context, token string) ([]mode
 	return expenses, nil
 }
 
-func (s *service) RegisterExpense(ctx context.Context, createdExpense *model.Expense) error {
-	err := s.repo.CreateExpense(ctx, createdExpense)
+func (s *service) RegisterExpense(ctx context.Context, createdExpense *model.Expense, []string debtorsUsernames) error {
+	err := s.repo.CreateExpense(ctx, createdExpense, debtorsUsernames)
 	if err != nil {
 		return err
 	}

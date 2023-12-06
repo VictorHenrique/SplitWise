@@ -12,13 +12,13 @@ import (
 type Service interface {
 	GetGroupByID(ctx context.Context, groupID int) (*model.Group, error)
 	GetGroupsFromUser(ctx context.Context, token string) ([]model.Group, error)
-	RegisterGroup(ctx context.Context, createdGroup *model.Group) error
+	RegisterGroup(ctx context.Context, createdGroup *model.Group, []string membersUsernames) error
 	DeleteGroup(ctx context.Context, groupID int) error
 }
 
 type groupRepository interface {
 	GetGroupByID(ctx context.Context, groupID int) (*model.Group, error)
-	CreateGroup(ctx context.Context, group *model.Group) error
+	CreateGroup(ctx context.Context, group *model.Group, []string membersUsernames) error
 	DeleteGroup(ctx context.Context, groupID int) error
 	GetAllGroupsFromUser(ctx context.Context, username string) ([]model.Group, error)
 	CloseDB() error
@@ -76,8 +76,8 @@ func (s *service) GetGroupsFromUser(ctx context.Context, token string) ([]model.
 	return groups, nil
 }
 
-func (s *service) RegisterGroup(ctx context.Context, createdGroup *model.Group) error {
-	err := s.repo.CreateGroup(ctx, createdGroup)
+func (s *service) RegisterGroup(ctx context.Context, createdGroup *model.Group, []string membersUsernames) error {
+	err := s.repo.CreateGroup(ctx, createdGroup, membersUsernames)
 	if err != nil {
 		return err
 	}

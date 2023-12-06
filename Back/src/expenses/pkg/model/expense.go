@@ -13,3 +13,10 @@ type Expense struct {
 	Title       string    `json:"title"`
 	GroupId     string    `json:"group_id"`
 }
+
+type UserDue struct {
+	Username  string  `json:"username"`
+	ExpenseID string  `json:"expense_id"`
+	Amount    float64 `json:"amount"`
+	IsPayed   bool    `json:"is_payed"`
+}

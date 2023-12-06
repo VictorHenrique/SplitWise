@@ -53,7 +53,7 @@ func (r *Repository) GetAllExpensesFromGroup(ctx context.Context, groupID int) (
 		FROM expense
 		WHERE group_id = $1
 	`
-	rows, err := r.db.QueryContext(ctx, query, id)
+	rows, err := r.db.QueryContext(ctx, query, groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -84,21 +84,33 @@ func (r *Repository) GetAllExpensesFromGroup(ctx context.Context, groupID int) (
 	return expenses, nil
 }
 
-func (r *Repository) GetAllExpensesFromUser(ctx context.Context, username string) ([]model.Expense, error) ([]model.Group, error) {
+func (r *Repository) GetAllExpensesFromUser(ctx context.Context, username string) ([]model.Expense, []model.UserDue error) {
 	query := `
-		SELECT e.id, e.payee, e.amount, e.pay_date, e.description, e.title, e.group_id
-		FROM expense AS e JOIN user_dues AS ud ON e.id = ud.expense_id
-		WHERE ud.username = $1
+		SELECT 
+			e.id, e.payee, e.amount AS total_amount,
+			e.pay_date, e.description, e.title, e.group_id,
+			ud.is_payed, ud.amount AS due_amount
+		FROM
+			expense AS e JOIN user_dues AS ud ON e.id = ud.expense_id
+		WHERE
+			ud.username = $1
 	`
-	rows, err := r.db.QueryContext(ctx, query, id)
+	rows, err := r.db.QueryContext(ctx, query, username)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
+
+	var isPayed bool
+	var dueAmt  float64
+
 	var expenses []model.Expense
+	var userDues []model.UserDues
 	for rows.Next() {
 		var expense model.Expense
+		var userDue model.UserDues
+
 		err := row.Scan(
 			&expense.ID,
 			&expense.Payee,
@@ -107,23 +119,40 @@ func (r *Repository) GetAllExpensesFromUser(ctx context.Context, username string
 			&expense.Description,
 			&expense.Title,
 			&expense.GroupId,
+			&userDue.Amount,
+			&userDue.IsPayed,
 		)
+		userDue.Username = username
+		userDue.ExpenseID = expense.ID
+
 		if err != nil {
 			return nil, err
 		}
+
 		expenses = append(expenses, expense)
+		userDues = append(userDues, userDue)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return expenses, nil
+	return expenses, userDues, nil
 }
 
-func (r *Repository) CreateExpense(ctx context.Context, expense *model.Expense) error {
+func (r *Repository) CreateExpense(ctx context.Context, expense *model.Expense, []string debtorsUsernames) error {
 	query := "INSERT INTO expense (id, payee, amount, pay_date, description, title, group_id) VALUES ($1, $2, $3, $4, $5, $6 $7)"
 	_, err := r.db.Exec(query, expense.ID, expense.Owner, expense.Name, expense.CreationDate, expense.AmountUsers, expense.AmountExpenses)
+
+	amtDue := expense.AmountUsers / (len(debtorsUsernames) + 1) // + 1 because payee always is debtor
+
+	query = "INSERT INTO user_dues (username, expense_id, amount, is_payed) VALUES ($1, $2, $3, $4)"
+	for _, username := range debtorsUsernames {
+		_, err := r.db.Exec(query, username, expense.ID, amtDue, false)
+		if err != nil {
+			return err
+		}
+	}
 
 	return err
 }
