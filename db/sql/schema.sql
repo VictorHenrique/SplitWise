@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS users_group CASCADE;
 DROP TABLE IF EXISTS expense CASCADE;
 DROP TABLE IF EXISTS user_in_group CASCADE;
 DROP TABLE IF EXISTS user_dues CASCADE;
+DROP TABLE IF EXISTS user_connections CASCADE; 
 
 CREATE TABLE user_account (
     username      VARCHAR(255), 
@@ -18,7 +19,7 @@ CREATE TABLE user_account (
 
 
 CREATE TABLE users_group (
-	id              SERIAL,
+	id              VARCHAR(255),
 	owner           VARCHAR(255) NOT NULL,
 	name            VARCHAR(255) NOT NULL,
 	creation_date   TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -43,11 +44,11 @@ CREATE TABLE expense (
 
 CREATE TABLE user_in_group (
 	username    VARCHAR(255),
-	group_id    INT,
+	group_id    VARCHAR(255),
 	
 	CONSTRAINT pk_user_in_group PRIMARY KEY (username, group_id),
-	CONSTRAINT fk_user FOREIGN KEY (username) REFERENCES user_account(username),
-	CONSTRAINT fk_group FOREIGN KEY (group_id) REFERENCES users_group(id)
+	CONSTRAINT fk_user FOREIGN KEY (username) REFERENCES user_account(username) ON DELETE CASCADE,
+	CONSTRAINT fk_group FOREIGN KEY (group_id) REFERENCES users_group(id) ON DELETE CASCADE
 );
 
 CREATE TABLE user_dues (
@@ -65,5 +66,7 @@ CREATE TABLE user_connections (
 	username1 VARCHAR(255),
 	username2 VARCHAR(255),
 	
-	CONSTRAINT pk_user_connections PRIMARY KEY (username1, username2)e(id)
+	CONSTRAINT pk_user_connections PRIMARY KEY (username1, username2),
+	CONSTRAINT fk_user_1 FOREIGN KEY (username1) REFERENCES user_account(username),
+	CONSTRAINT fk_user_2 FOREIGN KEY (username2) REFERENCES user_account(username)
 );
