@@ -1,6 +1,7 @@
 package group
 
 import (
+	"errors"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -46,11 +47,20 @@ func NewHttpServer(svc Service, logger kitlog.Logger) *mux.Router {
 		options...,
 	)
 
+	addUsersToGroupHandler := kithttp.NewServer(
+		MakeAddUsersToGroupEndpoint(svc),
+		decodeAddUsersToGroupRequest,
+		encodeResponse,
+		options...,
+	)
+
+
 	r := mux.NewRouter()
 	r.Methods("POST").Path("/register-group").Handler(registerGroupHandler)
 	r.Methods("DELETE").Path("/delete-group").Handler(deleteGroupHandler)
 	r.Methods("GET").Path("/get-group").Handler(getGroupHandler)
-	r.Methods("GET").Path("/get-all-groups").Handler(getAllGroupsHandler)
+	r.Methods("POST").Path("/get-all-groups").Handler(getAllGroupsHandler)
+	r.Methods("POST").Path("/add-users-to-group").Handler(addUsersToGroupHandler)
 
 	return r
 }
@@ -98,15 +108,29 @@ func decodeDeleteGroupRequest(ctx context.Context, r *http.Request) (interface{}
 }
 
 func decodeGetGroupRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	var request getGroupRequest
+	groupID := r.URL.Query().Get("id")
+
+	if groupID == "" {
+		return nil, errors.New("No parameter for group id")
+	}
+
+	request := getGroupRequest{
+		ID: groupID,
+	}
+
+	return request, nil
+}
+
+func decodeGetAllGroupsRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	var request getAllGroupsRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, err
 	}
 	return request, nil
 }
 
-func decodeGetAllGroupsRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	var request getAllGroupsRequest
+func decodeAddUsersToGroupRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	var request addUsersToGroupRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, err
 	}

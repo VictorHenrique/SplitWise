@@ -1,26 +1,29 @@
 package group
 
 import (
+	"fmt"
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"groups/pkg/model"
 	"net/http"
-	"strings"
 )
 
 type Service interface {
-	GetGroupByID(ctx context.Context, groupID int) (*model.Group, error)
+	GetGroupByID(ctx context.Context, groupID string) (*model.Group, error)
 	GetGroupsFromUser(ctx context.Context, token string) ([]model.Group, error)
-	RegisterGroup(ctx context.Context, createdGroup *model.Group, []string membersUsernames) error
-	DeleteGroup(ctx context.Context, groupID int) error
+	RegisterGroup(ctx context.Context, createdGroup *model.Group, membersUsernames []string) error
+	DeleteGroup(ctx context.Context, groupID string, username string) error
+	AddUsersToGroup(ctx context.Context, groupID string, membersUsernames []string) error
 }
 
 type groupRepository interface {
-	GetGroupByID(ctx context.Context, groupID int) (*model.Group, error)
-	CreateGroup(ctx context.Context, group *model.Group, []string membersUsernames) error
-	DeleteGroup(ctx context.Context, groupID int) error
+	GetGroupByID(ctx context.Context, groupID string) (*model.Group, error)
+	CreateGroup(ctx context.Context, group *model.Group, membersUsernames []string) error
+	DeleteGroup(ctx context.Context, groupID string, username string) error
 	GetAllGroupsFromUser(ctx context.Context, username string) ([]model.Group, error)
+	AddUsersToGroup(ctx context.Context, groupID string, membersUsernames []string) error
 	CloseDB() error
 }
 
@@ -38,7 +41,8 @@ func NewService(groupRepo groupRepository) Service {
 	return &service{repo: groupRepo}
 }
 
-func (s *service) GetGroupByID(ctx context.Context, groupID int) (*model.Group, error) {
+func (s *service) GetGroupByID(ctx context.Context, groupID string) (*model.Group, error) {
+	fmt.Println(groupID)
 	group, err := s.repo.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return nil, err
@@ -48,9 +52,9 @@ func (s *service) GetGroupByID(ctx context.Context, groupID int) (*model.Group, 
 }
 
 func (s *service) GetGroupsFromUser(ctx context.Context, token string) ([]model.Group, error) {
-	// FIXME: this needs refactoring: Please add this to a middleware that will
-	// manage the token requests.
-	req, err := http.Post("http://localhost:8081/validate-token", "text/plain", strings.NewReader(token))
+	body, _ := json.Marshal(map[string]string{ "token": token })
+    payload := bytes.NewBuffer(body)
+	req, err := http.Post("http://localhost:8081/validate-token", "application/json", payload)
 
 	if err != nil {
 		return nil, err
@@ -76,7 +80,7 @@ func (s *service) GetGroupsFromUser(ctx context.Context, token string) ([]model.
 	return groups, nil
 }
 
-func (s *service) RegisterGroup(ctx context.Context, createdGroup *model.Group, []string membersUsernames) error {
+func (s *service) RegisterGroup(ctx context.Context, createdGroup *model.Group, membersUsernames []string) error {
 	err := s.repo.CreateGroup(ctx, createdGroup, membersUsernames)
 	if err != nil {
 		return err
@@ -85,8 +89,18 @@ func (s *service) RegisterGroup(ctx context.Context, createdGroup *model.Group, 
 	return nil
 }
 
-func (s *service) DeleteGroup(ctx context.Context, groupID int) error {
-	err := s.repo.DeleteGroup(ctx, groupID)
+func (s *service) DeleteGroup(ctx context.Context, groupID string, username string) error {
+	err := s.repo.DeleteGroup(ctx, groupID, username)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+
+func (s *service) AddUsersToGroup(ctx context.Context, groupID string, membersUsernames []string) error {
+	err := s.repo.AddUsersToGroup(ctx, groupID, membersUsernames)
 	if err != nil {
 		return err
 	}

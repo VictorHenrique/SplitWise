@@ -33,8 +33,8 @@ func NewHttpServer(svc Service, logger kitlog.Logger) *mux.Router {
 	)
 
 	getAllConnectionsHandler := kithttp.NewServer(
-		MakeGetConnectionEndpoint(svc),
-		decodeGetConnectionRequest,
+		MakeGetAllConnectionsEndpoint(svc),
+		decodeGetAllConnectionsRequest,
 		encodeResponse,
 		options...,
 	)
@@ -42,7 +42,7 @@ func NewHttpServer(svc Service, logger kitlog.Logger) *mux.Router {
 	r := mux.NewRouter()
 	r.Methods("POST").Path("/register-connection").Handler(registerConnectionHandler)
 	r.Methods("DELETE").Path("/delete-connection").Handler(deleteConnectionHandler)
-	r.Methods("GET").Path("/get-all-connections").Handler(getAllConnectionsHandler)
+	r.Methods("POST").Path("/get-all-connections").Handler(getAllConnectionsHandler)
 
 	return r
 }

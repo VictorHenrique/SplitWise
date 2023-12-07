@@ -10,19 +10,19 @@ import (
 )
 
 type Service interface {
-	GetExpenseByID(ctx context.Context, expenseID int) (*model.Expense, error)
-	GetExpensesFromGroup(ctx context.Context, id int) ([]model.Expense, error)
-	GetExpensesFromUser(ctx context.Context, token string) ([]model.Expense, error)
-	RegisterExpense(ctx context.Context, createdExpense *model.Expense, []string debtorsUsernames) error
+	GetExpenseByID(ctx context.Context, expenseID int) (*model.Expense, []model.UserDue, error)
+	GetExpensesFromGroup(ctx context.Context, id int) ([]model.Expense, []model.UserDue, error)
+	GetExpensesFromUser(ctx context.Context, token string) ([]model.Expense, []model.UserDue, error)
+	RegisterExpense(ctx context.Context, createdExpense *model.Expense, debtorsUsernames []string) error
 	DeleteExpense(ctx context.Context, expenseID int) error
 }
 
 type expenseRepository interface {
 	GetExpenseByID(ctx context.Context, expenseID int) (*model.Expense, error)
-	CreateExpense(ctx context.Context, expense *model.Expense, []string debtorsUsernames) error
+	CreateExpense(ctx context.Context, expense *model.Expense, debtorsUsernames []string) error
 	DeleteExpense(ctx context.Context, expenseID int) error
-	GetAllExpensesFromGroup(ctx context.Context, groupID int) ([]model.Expense, error)
-	GetAllExpensesFromUser(ctx context.Context, username string) ([]model.Expense, error)
+	GetAllExpensesFromGroup(ctx context.Context, groupID int) ([]model.Expense, []model.UserDue, error)
+	GetAllExpensesFromUser(ctx context.Context, username string) ([]model.Expense, []model.UserDue, error)
 	CloseDB() error
 }
 
@@ -50,13 +50,13 @@ func (s *service) GetExpenseByID(ctx context.Context, expenseID int) (*model.Exp
 	return expense, err
 }
 
-func (s *service) GetExpensesFromGroups(ctx context.Context, groupID int) ([]model.Expense, error) {
-	expenses, err := s.repo.GetAllExpensesFromGroup(ctx, groupID)
+func (s *service) GetExpensesFromGroup(ctx context.Context, groupID int) ([]model.Expense, []model.UserDue, error) {
+	expenses, userDues, err := s.repo.GetAllExpensesFromGroup(ctx, groupID)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return expenses, nil
+	return expenses, userDues, nil
 }
 
 func (s *service) GetExpensesFromUser(ctx context.Context, token string) ([]model.Expense, error) {
@@ -88,7 +88,7 @@ func (s *service) GetExpensesFromUser(ctx context.Context, token string) ([]mode
 	return expenses, nil
 }
 
-func (s *service) RegisterExpense(ctx context.Context, createdExpense *model.Expense, []string debtorsUsernames) error {
+func (s *service) RegisterExpense(ctx context.Context, createdExpense *model.Expense, debtorsUsernames []string) error {
 	err := s.repo.CreateExpense(ctx, createdExpense, debtorsUsernames)
 	if err != nil {
 		return err

@@ -9,7 +9,7 @@ import (
 )
 
 type registerExpenseRequest struct {
-	ID               int       `json:"id"`
+	ID               string    `json:"id"`
 	Payee            string    `json:"payee"`
 	Amount           int       `json:"amount"`
 	PayDate          time.Time `json:"pay_date"`
@@ -37,7 +37,7 @@ func MakeRegisterExpenseEndpoint(svc Service) endpoint.Endpoint {
 			GroupId:     req.GroupId,
 		}
 
-		if err := svc.RegisterGroup(ctx, &createdGroup, req.DebtorsUsernames); err != nil {
+		if err := svc.RegisterExpense(ctx, &createdExpense, req.DebtorsUsernames); err != nil {
 			return registerExpenseResponse{err.Error()}, err
 		}
 		return registerExpenseResponse{""}, nil
@@ -89,19 +89,20 @@ type getAllExpensesFromGroupRequest struct {
 }
 
 type getAllExpensesFromGroupResponse struct {
-	Expenses []model.Expense `json:"expenses"`
-	Err      string          `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
+	Expenses []model.Expense  `json:"expenses"`
+	UserDues []model.UserDue  `json:"user_due"`
+	Err      string           `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
 func MakeGetAllExpensesFromGroupEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request any) (any, error) {
 		req := request.(getAllExpensesFromGroupRequest)
 
-		expenses, err := svc.GetExpensesFromGroup(ctx, req.ID)
+		expenses, userDues, err := svc.GetExpensesFromGroup(ctx, req.ID)
 		if err != nil {
-			return getAllExpensesFromGroupResponse{nil, err.Error()}, err
+			return getAllExpensesFromGroupResponse{nil, nil, err.Error()}, err
 		}
-		return getAllExpensesFromGroupResponse{expenses, ""}, err
+		return getAllExpensesFromGroupResponse{expenses, userDues, ""}, err
 	}
 }
 

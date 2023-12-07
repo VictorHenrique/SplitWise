@@ -26,34 +26,25 @@ func NewDB(db *sql.DB) *Repository {
 	return &Repository{db: db}
 }
 
-func (r *Repository) GetAllConnectionsFromUser(ctx context.Context, username string) ([]model.Group, error) {
-	query := `
-		SELECT
-			CASE
-				WHEN username1 = $1 THEN username2
-				WHEN username2 = $1 THEN username1
-			END
-		FROM user_connections
-		WHERE username = $1 OR username2 = $1
-	`
+func (r *Repository) GetAllConnectionsFromUser(ctx context.Context, username string) ([]string, error) {
+	query := "SELECT CASE WHEN username1 = $1 THEN username2 WHEN username2 = $1 THEN username1 END FROM user_connections WHERE username1 = $1 OR username2 = $1"
+
 	rows, err := r.db.QueryContext(ctx, query, username)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var connections []model.Connection
+	var connections []string
 	for rows.Next() {
-		var connection model.Connection
-		err := rows.Scan(
-			&connection.FriendUsername,
-		)
+		var friendUsername string
+		err := rows.Scan(&friendUsername)
+
 		if err != nil {
 			return nil, err
 		}
 
-		connection.Username = username
-		connections = append(connections, connection)
+		connections = append(connections, friendUsername)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -71,10 +62,7 @@ func (r *Repository) CreateConnection(ctx context.Context, connection *model.Con
 }
 
 func (r *Repository) DeleteConnection(ctx context.Context, username string, friendUsername string) error {
-	query := "
-		DELETE FROM user_connection
-		WHERE (username1 = $1 AND username2 = $2) OR (username2 = $1 AND username1 = $2)
-	"
+	query := "DELETE FROM user_connections WHERE (username1 = $1 AND username2 = $2) OR (username2 = $1 AND username1 = $2)"
 	_, err := r.db.Exec(query, username, friendUsername)
 
 	return err

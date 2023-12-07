@@ -28,7 +28,7 @@ func MakeRegisterConnectionEndpoint(svc Service) endpoint.Endpoint {
 		if err := svc.RegisterConnection(ctx, &createdConnection); err != nil {
 			return registerConnectionResponse{err.Error()}, err
 		}
-		return registerConnectionResponse{""}, nil
+		return registerConnectionResponse{"Success"}, nil
 	}
 }
 
@@ -57,7 +57,7 @@ type getAllConnectionsRequest struct {
 }
 
 type getAllConnectionsResponse struct {
-	Connections []model.Connection `json:"connections"`
+	Connections []string `json:"connections"`
 	Err        string            `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 

@@ -26,7 +26,7 @@ func NewDB(db *sql.DB) *Repository {
 	return &Repository{db: db}
 }
 
-func (r *Repository) GetGroupByID(ctx context.Context, groupID int) (*model.Group, error) {
+func (r *Repository) GetGroupByID(ctx context.Context, groupID string) (*model.Group, error) {
 	query := "SELECT * FROM users_group WHERE id = $1"
 	row := r.db.QueryRow(query, groupID)
 
@@ -44,40 +44,36 @@ func (r *Repository) GetGroupByID(ctx context.Context, groupID int) (*model.Grou
 }
 
 func (r *Repository) GetAllGroupsFromUser(ctx context.Context, username string) ([]model.Group, error) {
-	query := `
-		SELECT id, owner, name, creation_date, amount_users, amount_expenses
-		FROM users_group
-		WHERE owner = $1
-	`
+	query := "SELECT g.id, g.owner, g.name, g.creation_date FROM user_in_group ug JOIN users_group g ON g.id = ug.group_id WHERE username = $1"
 	rows, err := r.db.QueryContext(ctx, query, username)
 	if err != nil {
 		return nil, err
-	}
+	}	
+
 	defer rows.Close()
 
 	var groups []model.Group
 	for rows.Next() {
 		var group model.Group
-		err := rows.Scan(
+		if err := rows.Scan(
 			&group.ID,
 			&group.Owner,
 			&group.Name,
 			&group.CreationDate,
-		)
-		if err != nil {
+		); err != nil {
 			return nil, err
 		}
 		groups = append(groups, group)
 	}
 
-	if err := rows.Err(); err != nil {
-		return nil, err
+	if len(groups) == 0 {
+		return nil, nil
 	}
 
-	return groups, nil
+    return groups, nil
 }
 
-func (r *Repository) CreateGroup(ctx context.Context, group *model.Group, []string membersUsernames) error {
+func (r *Repository) CreateGroup(ctx context.Context, group *model.Group, membersUsernames []string) error {
 	query := "INSERT INTO users_group (id, owner, name, creation_date) VALUES ($1, $2, $3, $4)"
 	_, err := r.db.Exec(query, group.ID, group.Owner, group.Name, group.CreationDate)
 
@@ -87,22 +83,38 @@ func (r *Repository) CreateGroup(ctx context.Context, group *model.Group, []stri
 
 	membersUsernames = append(membersUsernames, group.Owner)
 
+	err = r.AddUsersToGroup(ctx, group.ID, membersUsernames)
+
+	return err
+}
+
+func (r *Repository) DeleteGroup(ctx context.Context, groupID string, username string) error {
+	query := "DELETE FROM users_group WHERE id = $1 AND owner = $2"
+	_, err := r.db.Exec(query, groupID, username)
+
+	return err
+}
+
+func (r *Repository) AddUsersToGroup(ctx context.Context, groupID string, membersUsernames []string) error {
+	query := "SELECT id FROM users_group WHERE id = $1"
+	rows, err := r.db.QueryContext(ctx, query, groupID)
+	if err != nil {
+		return nil
+	}
+
+	if !rows.Next() {
+		return fmt.Errorf("No group with id %s", groupID)
+	}
+
 	query = "INSERT INTO user_in_group (username, group_id) VALUES ($1, $2)"
 	for _, username := range membersUsernames {
-		_, err := r.db.Exec(query, username, group.ID)
+		_, err := r.db.Exec(query, username, groupID)
 		if err != nil {
 			return err
 		}
 	}
 
 	return nil
-}
-
-func (r *Repository) DeleteGroup(ctx context.Context, groupID int) error {
-	query := "DELETE FROM users_group WHERE id = $1"
-	_, err := r.db.Exec(query, groupID)
-
-	return err
 }
 
 func ConnectToDB() *Repository {
