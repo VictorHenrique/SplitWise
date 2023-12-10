@@ -1,0 +1,9 @@
+go 1.21.4
+
+use (
+	./Back/src
+	./Back/src/auth
+	./Back/src/connections
+	./Back/src/expenses
+	./Back/src/groups
+)
