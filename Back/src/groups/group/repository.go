@@ -48,7 +48,7 @@ func (r *Repository) GetAllGroupsFromUser(ctx context.Context, username string) 
 	rows, err := r.db.QueryContext(ctx, query, username)
 	if err != nil {
 		return nil, err
-	}	
+	}
 
 	defer rows.Close()
 

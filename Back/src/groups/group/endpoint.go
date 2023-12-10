@@ -12,7 +12,7 @@ import (
 type registerGroupRequest struct {
 	Owner            string    `json:"owner"`
 	Name             string    `json:"name"`
-	MembersUsernames []string  `json:"members_username"`
+	MembersUsernames []string  `json:"members_usernames"`
 }
 
 type registerGroupResponse struct {
@@ -50,7 +50,7 @@ type addUsersToGroupResponse struct {
 func MakeAddUsersToGroupEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request any) (any, error) {
 		req := request.(addUsersToGroupRequest)
-		
+
 		groupID := req.GroupID
 		membersUsernames := req.MembersUsernames
 

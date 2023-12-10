@@ -40,7 +40,7 @@ func MakeRegisterExpenseEndpoint(svc Service) endpoint.Endpoint {
 		if err := svc.RegisterExpense(ctx, &createdExpense, req.DebtorsUsernames); err != nil {
 			return registerExpenseResponse{err.Error()}, err
 		}
-		return registerExpenseResponse{""}, nil
+		return registerExpenseResponse{"Sucess"}, nil
 	}
 }
 
@@ -91,7 +91,6 @@ type getAllExpensesFromGroupRequest struct {
 
 type getAllExpensesFromGroupResponse struct {
 	Expenses []model.Expense  `json:"expenses"`
-	UserDues []model.UserDue  `json:"user_due"`
 	Err      string           `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
@@ -99,11 +98,11 @@ func MakeGetAllExpensesFromGroupEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request any) (any, error) {
 		req := request.(getAllExpensesFromGroupRequest)
 
-		expenses, userDues, err := svc.GetExpensesFromGroup(ctx, req.ID)
+		expenses, err := svc.GetExpensesFromGroup(ctx, req.ID)
 		if err != nil {
-			return getAllExpensesFromGroupResponse{nil, nil, err.Error()}, err
+			return getAllExpensesFromGroupResponse{nil, err.Error()}, err
 		}
-		return getAllExpensesFromGroupResponse{expenses, userDues, ""}, err
+		return getAllExpensesFromGroupResponse{expenses, ""}, err
 	}
 }
 

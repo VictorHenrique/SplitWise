@@ -6,12 +6,12 @@ import (
 	"errors"
 	"expenses/pkg/model"
 	"net/http"
-	"strings"
+	"bytes"
 )
 
 type Service interface {
 	GetExpenseByID(ctx context.Context, expenseID string) (*model.Expense, []model.UserDue, error)
-	GetExpensesFromGroup(ctx context.Context, id string) ([]model.Expense, []model.UserDue, error)
+	GetExpensesFromGroup(ctx context.Context, id string) ([]model.Expense, error)
 	GetExpensesFromUser(ctx context.Context, token string) ([]model.Expense, []model.UserDue, error)
 	RegisterExpense(ctx context.Context, createdExpense *model.Expense, debtorsUsernames []string) error
 	DeleteExpense(ctx context.Context, expenseID string) error
@@ -19,10 +19,10 @@ type Service interface {
 
 type expenseRepository interface {
 	GetExpenseByID(ctx context.Context, expenseID string) (*model.Expense, []model.UserDue, error)
+	GetAllExpensesFromGroup(ctx context.Context, groupID string) ([]model.Expense, error)
+	GetAllExpensesFromUser(ctx context.Context, username string) ([]model.Expense, []model.UserDue, error)
 	CreateExpense(ctx context.Context, expense *model.Expense, debtorsUsernames []string) error
 	DeleteExpense(ctx context.Context, expenseID string) error
-	GetAllExpensesFromGroup(ctx context.Context, groupID string) ([]model.Expense, []model.UserDue, error)
-	GetAllExpensesFromUser(ctx context.Context, username string) ([]model.Expense, []model.UserDue, error)
 	CloseDB() error
 }
 
@@ -50,19 +50,19 @@ func (s *service) GetExpenseByID(ctx context.Context, expenseID string) (*model.
 	return expense, usersDue, err
 }
 
-func (s *service) GetExpensesFromGroup(ctx context.Context, groupID string) ([]model.Expense, []model.UserDue, error) {
-	expenses, userDues, err := s.repo.GetAllExpensesFromGroup(ctx, groupID)
+func (s *service) GetExpensesFromGroup(ctx context.Context, groupID string) ([]model.Expense, error) {
+	expenses,  err := s.repo.GetAllExpensesFromGroup(ctx, groupID)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	return expenses, userDues, nil
+	return expenses, nil
 }
 
 func (s *service) GetExpensesFromUser(ctx context.Context, token string) ([]model.Expense, []model.UserDue, error) {
-	// FIXME: this needs refactoring: Please add this to a middleware that will
-	// manage the token requests.
-	req, err := http.Post("http://localhost:8081/validate-token", "text/plain", strings.NewReader(token))
+	body, _ := json.Marshal(map[string]string{ "token": token })
+    payload := bytes.NewBuffer(body)
+	req, err := http.Post("http://localhost:8081/validate-token", "application/json", payload)
 
 	if err != nil {
 		return nil, nil, err

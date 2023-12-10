@@ -3,6 +3,7 @@ package expense
 import (
 	"context"
 	"encoding/json"
+    "errors"
 	"net/http"
 
 	"github.com/go-kit/kit/transport"
@@ -106,26 +107,38 @@ func decodeDeleteExpenseRequest(ctx context.Context, r *http.Request) (interface
 }
 
 func decodeGetExpenseRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	var request getExpenseRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		return nil, err
-	}
+    expenseID := r.URL.Query().Get("id")
+
+    if expenseID == "" {
+        return nil, errors.New("No parameter for expense id")
+    }
+    request := getExpenseRequest {
+        ID: expenseID,
+    }
 	return request, nil
 }
 
 func decodeGetAllExpensesFromGroupRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	var request getAllExpensesFromGroupRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		return nil, err
-	}
+    expenseID := r.URL.Query().Get("id")
+
+    if expenseID == "" {
+        return nil, errors.New("No parameter for expense id")
+    }
+    request := getAllExpensesFromGroupRequest {
+        ID: expenseID,
+    }
 	return request, nil
 }
 
 func decodeGetAllExpensesFromUserRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	var request getAllExpensesFromUserRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		return nil, err
-	}
+    token := r.URL.Query().Get("token")
+
+    if token == "" {
+        return nil, errors.New("No parameter for expense id")
+    }
+    request := getAllExpensesFromUserRequest {
+        Token: token,
+    }
 	return request, nil
 }
 
