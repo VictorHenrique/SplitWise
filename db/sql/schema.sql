@@ -30,13 +30,13 @@ CREATE TABLE users_group (
 );
 
 CREATE TABLE expense (
-	id          SERIAL,
+	id          VARCHAR(255),
 	payee       VARCHAR(255),
 	amount      MONEY NOT NULL,
 	pay_date    TIMESTAMP WITH TIME ZONE,
 	description VARCHAR(255),
 	title       VARCHAR(255) NOT NULL,
-	group_id    INTEGER NOT NULL,
+	group_id    VARCHAR(255) NOT NULL,
 	
 	CONSTRAINT pk_expense PRIMARY KEY (id),
 	CONSTRAINT sk_expense UNIQUE (payee, group_id, pay_date)
@@ -53,7 +53,7 @@ CREATE TABLE user_in_group (
 
 CREATE TABLE user_dues (
 	username   VARCHAR(255),
-	expense_id INT,
+	expense_id VARCHAR(255),
 	amount     REAL,
 	is_payed   BOOLEAN,
 	

@@ -1,6 +1,7 @@
 package expense
 
 import (
+	"github.com/google/uuid"
 	"context"
 	"expenses/pkg/model"
 	"time"
@@ -9,9 +10,8 @@ import (
 )
 
 type registerExpenseRequest struct {
-	ID               string    `json:"id"`
 	Payee            string    `json:"payee"`
-	Amount           int       `json:"amount"`
+	Amount           float64   `json:"amount"`
 	PayDate          time.Time `json:"pay_date"`
 	Description      string    `json:"description"`
 	Title            string    `json:"title"`
@@ -28,7 +28,7 @@ func MakeRegisterExpenseEndpoint(svc Service) endpoint.Endpoint {
 		req := request.(registerExpenseRequest)
 
 		createdExpense := model.Expense{
-			ID:          req.ID,
+			ID:          uuid.New().String(),
 			Payee:       req.Payee,
 			Amount:      req.Amount,
 			PayDate:     req.PayDate,
@@ -45,7 +45,7 @@ func MakeRegisterExpenseEndpoint(svc Service) endpoint.Endpoint {
 }
 
 type deleteExpenseRequest struct {
-	ID int `json:"id"`
+	ID string `json:"id"`
 }
 
 type deleteExpenseResponse struct {
@@ -64,28 +64,29 @@ func MakeDeleteExpenseEndpoint(svc Service) endpoint.Endpoint {
 }
 
 type getExpenseRequest struct {
-	ID int `json:"id"`
+	ID string `json:"id"`
 }
 
 type getExpenseResponse struct {
-	Expense *model.Expense `json:"expense"`
-	Err     string         `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
+	Expense   *model.Expense  `json:"expense"`
+	UsersDue []model.UserDue `json:"user_dues"`
+	Err        string         `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
 func MakeGetExpenseEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request any) (any, error) {
 		req := request.(getExpenseRequest)
 
-		expense, err := svc.GetExpenseByID(ctx, req.ID)
+		expense, usersDue, err := svc.GetExpenseByID(ctx, req.ID)
 		if err != nil {
-			return getExpenseResponse{nil, err.Error()}, err
+			return getExpenseResponse{nil, nil, err.Error()}, err
 		}
-		return getExpenseResponse{expense, ""}, err
+		return getExpenseResponse{expense, usersDue, ""}, err
 	}
 }
 
 type getAllExpensesFromGroupRequest struct {
-	ID int `json:"id"`
+	ID string `json:"id"`
 }
 
 type getAllExpensesFromGroupResponse struct {
@@ -112,6 +113,7 @@ type getAllExpensesFromUserRequest struct {
 
 type getAllExpensesFromUserResponse struct {
 	Expenses []model.Expense `json:"expenses"`
+	UserDues []model.UserDue  `json:"user_due"`
 	Err      string          `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
 }
 
@@ -119,10 +121,10 @@ func MakeGetAllExpensesFromUserEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request any) (any, error) {
 		req := request.(getAllExpensesFromUserRequest)
 
-		expenses, err := svc.GetExpensesFromUser(ctx, req.Token)
+		expenses, usersDue, err := svc.GetExpensesFromUser(ctx, req.Token)
 		if err != nil {
-			return getAllExpensesFromUserResponse{nil, err.Error()}, err
+			return getAllExpensesFromUserResponse{nil, nil, err.Error()}, err
 		}
-		return getAllExpensesFromUserResponse{expenses, ""}, err
+		return getAllExpensesFromUserResponse{expenses, usersDue, ""}, err
 	}
 }

@@ -10,18 +10,18 @@ import (
 )
 
 type Service interface {
-	GetExpenseByID(ctx context.Context, expenseID int) (*model.Expense, []model.UserDue, error)
-	GetExpensesFromGroup(ctx context.Context, id int) ([]model.Expense, []model.UserDue, error)
+	GetExpenseByID(ctx context.Context, expenseID string) (*model.Expense, []model.UserDue, error)
+	GetExpensesFromGroup(ctx context.Context, id string) ([]model.Expense, []model.UserDue, error)
 	GetExpensesFromUser(ctx context.Context, token string) ([]model.Expense, []model.UserDue, error)
 	RegisterExpense(ctx context.Context, createdExpense *model.Expense, debtorsUsernames []string) error
-	DeleteExpense(ctx context.Context, expenseID int) error
+	DeleteExpense(ctx context.Context, expenseID string) error
 }
 
 type expenseRepository interface {
-	GetExpenseByID(ctx context.Context, expenseID int) (*model.Expense, error)
+	GetExpenseByID(ctx context.Context, expenseID string) (*model.Expense, []model.UserDue, error)
 	CreateExpense(ctx context.Context, expense *model.Expense, debtorsUsernames []string) error
-	DeleteExpense(ctx context.Context, expenseID int) error
-	GetAllExpensesFromGroup(ctx context.Context, groupID int) ([]model.Expense, []model.UserDue, error)
+	DeleteExpense(ctx context.Context, expenseID string) error
+	GetAllExpensesFromGroup(ctx context.Context, groupID string) ([]model.Expense, []model.UserDue, error)
 	GetAllExpensesFromUser(ctx context.Context, username string) ([]model.Expense, []model.UserDue, error)
 	CloseDB() error
 }
@@ -41,16 +41,16 @@ func NewService(expenseRepo expenseRepository) Service {
 	return &service{repo: expenseRepo}
 }
 
-func (s *service) GetExpenseByID(ctx context.Context, expenseID int) (*model.Expense, error) {
-	expense, err := s.repo.GetExpenseByID(ctx, expenseID)
+func (s *service) GetExpenseByID(ctx context.Context, expenseID string) (*model.Expense, []model.UserDue, error) {
+	expense, usersDue, err := s.repo.GetExpenseByID(ctx, expenseID)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return expense, err
+	return expense, usersDue, err
 }
 
-func (s *service) GetExpensesFromGroup(ctx context.Context, groupID int) ([]model.Expense, []model.UserDue, error) {
+func (s *service) GetExpensesFromGroup(ctx context.Context, groupID string) ([]model.Expense, []model.UserDue, error) {
 	expenses, userDues, err := s.repo.GetAllExpensesFromGroup(ctx, groupID)
 	if err != nil {
 		return nil, nil, err
@@ -59,13 +59,13 @@ func (s *service) GetExpensesFromGroup(ctx context.Context, groupID int) ([]mode
 	return expenses, userDues, nil
 }
 
-func (s *service) GetExpensesFromUser(ctx context.Context, token string) ([]model.Expense, error) {
+func (s *service) GetExpensesFromUser(ctx context.Context, token string) ([]model.Expense, []model.UserDue, error) {
 	// FIXME: this needs refactoring: Please add this to a middleware that will
 	// manage the token requests.
 	req, err := http.Post("http://localhost:8081/validate-token", "text/plain", strings.NewReader(token))
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer req.Body.Close()
 
@@ -76,16 +76,16 @@ func (s *service) GetExpensesFromUser(ctx context.Context, token string) ([]mode
 	var res result
 	err = json.NewDecoder(req.Body).Decode(&res)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	username := res.Username
 
-	expenses, err := s.repo.GetAllExpensesFromUser(ctx, username)
+	expenses, userDues, err := s.repo.GetAllExpensesFromUser(ctx, username)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return expenses, nil
+	return expenses, userDues, nil
 }
 
 func (s *service) RegisterExpense(ctx context.Context, createdExpense *model.Expense, debtorsUsernames []string) error {
@@ -97,7 +97,7 @@ func (s *service) RegisterExpense(ctx context.Context, createdExpense *model.Exp
 	return nil
 }
 
-func (s *service) DeleteExpense(ctx context.Context, expenseID int) error {
+func (s *service) DeleteExpense(ctx context.Context, expenseID string) error {
 	err := s.repo.DeleteExpense(ctx, expenseID)
 	if err != nil {
 		return err
