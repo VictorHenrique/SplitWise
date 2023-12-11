@@ -2,11 +2,10 @@ import { View, Text, Button, Pressable, ScrollView } from 'react-native';
 import { Fontisto } from '@expo/vector-icons';
 import styles from './styles/styles.js';
 import React, { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import theme from './styles/theme.js';
 
 const GroupDetailsScreen = ({route, navigation}) => {
-    const { groupName, deleteGroup, groupMembers, username } = route.params;
+    const { groupID, groupName, deleteGroup, groupMembers, username } = route.params;
     const [groupExpenses, setGroupExpenses] = useState([]);
     const [userExpenses, setUserExpenses] = useState([]);
     const [isExpenseOpen, setIsExpenseOpen] = useState({});
@@ -14,24 +13,20 @@ const GroupDetailsScreen = ({route, navigation}) => {
     useEffect(() => {
         const fetchExpenses = async () => {
             try {
-                // Recupera as despesas do AsyncStorage quando a tela é montada
-                const expensesJSON = await AsyncStorage.getItem('expenses');
-                const expenses = expensesJSON ? JSON.parse(expensesJSON) : {};
-
-                // console.log('expenses')
-                // console.log(expenses[groupName])
-                // console.log('groupName',groupName);
-
-                // Define as despesas no estado local
-                setGroupExpenses(expenses[groupName] || []);
+                const apiUrl = 'http://192.168.15.24:8083/get-all-expenses-from-group'
+                const requestBody = {
+                    id: groupID,
+                };
+                const response = await axios.post(apiUrl, requestBody);
+                setGroupExpenses(response.data.expenses || []);
             } catch (error) {
-                console.error('Erro ao obter despesas do AsyncStorage: ', error);
+                console.error('Erro ao obter despesas do grupo:', error);
             }
         };
 
         // Chama a função para buscar despesas quando a tela for montada
         fetchExpenses();
-    }, [groupName]);
+    }, [groupID]);
 
     useEffect(() => {
         setUserExpenses(groupExpenses);
@@ -63,36 +58,22 @@ const GroupDetailsScreen = ({route, navigation}) => {
         return 0;
     }
 
-    const handleDeleteGroup = () => {
-        deleteGroup(groupName);
-        navigation.goBack();
-    }
-
     const addExpense = async (newExpense) => {
         try {
-            // Obtém as despesas atuais do AsyncStorage (se houver)
-            const existingExpensesJSON = await AsyncStorage.getItem('expenses');
-            let existingExpenses = existingExpensesJSON ? JSON.parse(existingExpensesJSON) : {};
+            const apiUrl = 'http://192.168.15.24:8083/register-expense'
+            const requestBody = {
+                payee: newExpense.payee,
+                amout: newExpense.amount,
+                payDate: newExpense.payDate,
+                description: newExpense.description,
+                title: newExpense.title,
+                groupId: groupID,
+                debtors_usernames: newExpense.debtors_usernames
+            };
+            const response = await axios.post(apiUrl, requestBody);
+            const newExpenseAdded = response.data
 
-            // Certifique-se de que groupName não seja nulo ou indefinido
-            if (!groupName) {
-                console.error('Nome do grupo inválido');
-                return;
-            }
-
-            // Certifique-se de que groupName está definido como uma chave válida
-            if (!existingExpenses[groupName]) {
-                existingExpenses[groupName] = [];
-            }
-
-            // Adiciona a nova despesa à lista de despesas do grupo
-            existingExpenses[groupName].push(newExpense);
-
-            // Salva a lista atualizada de despesas no AsyncStorage
-            await AsyncStorage.setItem('expenses', JSON.stringify(existingExpenses));
-
-            // console.log(existingExpenses);
-
+            setGroupExpenses((prevExpenses) => [...prevExpenses, newExpenseAdded]);
             // Volta para a tela anterior
             navigation.goBack();
         } catch (error) {
@@ -150,7 +131,6 @@ const GroupDetailsScreen = ({route, navigation}) => {
                                     <Text style={styles.fieldExpense}>Name: {expense.name}</Text>
                                     <Text style={styles.fieldExpense}>Total Value: ${expense.amount}</Text>
                                     <Text style={styles.fieldExpense}>Value to pay: ${calculateUserShare(expense)}</Text>
-                                    {/* <Text style={styles.fieldExpense}>Members: {expense.members.join(',')}</Text> */}
                                 </View>
                             )}
                         </View>

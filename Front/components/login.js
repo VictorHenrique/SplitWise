@@ -5,8 +5,9 @@ import theme from './styles/theme.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SvgUri } from 'react-native-svg';
 import TextField from './TextField.tsx';
+import axios from 'axios';
 
-const LoginScreen = ({navigation, accounts}) => {
+const LoginScreen = ({navigation}) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -19,11 +20,21 @@ const LoginScreen = ({navigation, accounts}) => {
       }
     };
 
-    const handleLogin = () => {
-        if (accounts[username] === password) {
+    const handleLogin = async () => {
+        try {
+            const apiUrl = 'http://192.168.15.24:8081/login-user';
+
+            const requestBody = {
+                username: username,
+                password: password
+            };
+            const response = await axios.post(apiUrl, requestBody);
+            const token = response.data.token;
+
             clearAsyncStorage();
-            navigation.navigate('Home', {username});
-        } else {
+            navigation.navigate('Home', {username, token});
+        } catch (error) {
+            console.error('Error logging in:', error);
             alert('Usuario e/ou senha invalido');
         }
     };

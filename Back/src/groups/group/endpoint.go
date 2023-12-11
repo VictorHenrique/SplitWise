@@ -16,24 +16,25 @@ type registerGroupRequest struct {
 }
 
 type registerGroupResponse struct {
-	Err string `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
+	ID string `json:"id"` // errors don't JSON-marshal, so we use a string
 }
 
 func MakeRegisterGroupEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request any) (any, error) {
 		req := request.(registerGroupRequest)
 
+        groupID := uuid.New().String()
 		createdGroup := model.Group{
-			ID:           uuid.New().String(),
+			ID:           groupID,
 			Owner:        req.Owner,
 			Name:         req.Name,
 			CreationDate: time.Now(),
 		}
 
 		if err := svc.RegisterGroup(ctx, &createdGroup, req.MembersUsernames); err != nil {
-			return registerGroupResponse{err.Error()}, err
+			return registerGroupResponse{""}, err
 		}
-		return registerGroupResponse{"Success"}, nil
+		return registerGroupResponse{groupID}, nil
 	}
 }
 
@@ -60,8 +61,6 @@ func MakeAddUsersToGroupEndpoint(svc Service) endpoint.Endpoint {
 		return addUsersToGroupResponse{"Success"}, nil
 	}
 }
-
-
 
 type deleteGroupRequest struct {
 	ID string `json:"id"`

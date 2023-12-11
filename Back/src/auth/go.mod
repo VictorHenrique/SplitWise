@@ -9,4 +9,7 @@ require (
 	github.com/lib/pq v1.10.9
 )
 
-require github.com/go-logfmt/logfmt v0.6.0 // indirect
+require (
+	github.com/go-logfmt/logfmt v0.6.0 // indirect
+	github.com/rs/cors v1.10.1 // indirect
+)

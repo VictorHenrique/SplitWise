@@ -14,10 +14,6 @@ import theme from './components/styles/theme.js';
 const Stack = createStackNavigator();
 
 const App = () => {
-    const [accounts, setAccounts] = useState({
-        'a': 'a'
-    });
-
     return (
         <NavigationContainer>
             <Stack.Navigator  initialRouteName='Login'>
@@ -28,7 +24,7 @@ const App = () => {
                     }}
                     name='Login'
                 >
-                    {(props) => <LoginScreen{...props} accounts={accounts}/>}
+                    {(props) => <LoginScreen{...props}/>}
                 </Stack.Screen>
                 <Stack.Screen
                     name='Register'
@@ -37,7 +33,7 @@ const App = () => {
                         headerShown: false,
                     }}
                 >
-                    {(props) => <RegisterScreen{...props} accounts={accounts} setAccounts={setAccounts}/>}
+                    {(props) => <RegisterScreen{...props}/>}
                 </Stack.Screen>
                 <Stack.Screen
                     name='Home'

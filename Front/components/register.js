@@ -3,20 +3,53 @@ import TextField from './TextField.tsx';
 import { View, Text, Pressable } from 'react-native';
 import styles from './styles/styles.js';
 import theme from './styles/theme.js';
+import axios from 'axios';
 
-const RegisterScreen = ({navigation, accounts, setAccounts}) => {
+const RegisterScreen = ({navigation}) => {
     const [username, setUsername] = useState('')
+    const [name, setName] = useState('')
+    const [surname, setSurname] = useState('')
+    const [phone, setPhone] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
 
-    const handleRegister = () => {
-        if (username !== '' && password !== '' && confirmPassword !== '' &&
-            email !== '' && password === confirmPassword) {
-            setAccounts({...accounts, [username]: password});
-            navigation.navigate('Login')
-        } else {
-            alert('Invalid Fields')
+    const handleRegister = async () => {
+        try {
+            const apiUrl = 'http://192.168.15.24:8081/register-user';
+
+            // Check for valid fields
+            if (
+                username !== '' &&
+                password !== '' &&
+                confirmPassword !== '' &&
+                email !== '' &&
+                password === confirmPassword
+            ) {
+                // Prepare the request payload
+                const requestBody = {
+                    username: username,
+                    email: email,
+                    password: password,
+                    name: name, // Add the actual name if you collect it in the registration form
+                    surname: surname, // Add the actual surname if you collect it in the registration form
+                    phone: phone, // Add the actual phone if you collect it in the registration form
+                    register_date: new Date().toISOString(),
+                };
+
+                // Make the POST request to register the user
+                const response = await axios.post(apiUrl, requestBody)
+                console.log(response)
+
+                // Handle the registration success or navigate to the login screen
+                console.log('User registered successfully:')
+                navigation.navigate('Login');
+            } else {
+                alert('Invalid Fields');
+            }
+        } catch (error) {
+            console.error('Error registering user:', error);
+            alert('Failed to register user. Please try again.');
         }
     }
 
@@ -29,6 +62,27 @@ const RegisterScreen = ({navigation, accounts, setAccounts}) => {
                 iconSize={24}
                 label='Username'
                 onChangeText={(text) => setUsername(text)}
+            />
+            <TextField
+                value={name}
+                iconName='user'
+                iconSize={24}
+                label='Name'
+                onChangeText={(text) => setName(text)}
+            />
+            <TextField
+                value={surname}
+                iconName='user'
+                iconSize={24}
+                label='Surname'
+                onChangeText={(text) => setSurname(text)}
+            />
+            <TextField
+                value={phone}
+                iconName='user'
+                iconSize={24}
+                label='Phone'
+                onChangeText={(text) => setPhone(text)}
             />
             <TextField
                 value={password}
