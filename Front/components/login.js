@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SvgUri } from 'react-native-svg';
 import TextField from './TextField.tsx';
 import axios from 'axios';
+import ip from '../ip.js';
 
 const LoginScreen = ({navigation}) => {
     const [username, setUsername] = useState('');
@@ -22,7 +23,7 @@ const LoginScreen = ({navigation}) => {
 
     const handleLogin = async () => {
         try {
-            const apiUrl = 'http://192.168.15.24:8081/login-user';
+            const apiUrl = 'http://' + ip + ':8081/login-user';
 
             const requestBody = {
                 username: username,
@@ -48,7 +49,7 @@ const LoginScreen = ({navigation}) => {
                     <SvgUri
                         width="100%"
                         height="100%"
-                        uri="http://thenewcode.com/assets/images/thumbnails/homer-simpson.svg"
+                        uri="https://www.svgrepo.com/show/388632/split-branch.svg"
                     />
                 </View>
 
@@ -56,7 +57,7 @@ const LoginScreen = ({navigation}) => {
                     value={username}
                     iconName='mail'
                     iconSize={24}
-                    label='Email'
+                    label='Username'
                     onChangeText={(text) => setUsername(text)}
                 />
                 <TextField

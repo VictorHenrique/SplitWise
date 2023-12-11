@@ -4,6 +4,7 @@ import { useRoute } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import ip from '../ip.js';
 
 const HomeScreen = ({navigation}) => {
     const route = useRoute();
@@ -13,7 +14,7 @@ const HomeScreen = ({navigation}) => {
     useEffect(() => {
         const fetchGroups = async () => {
             try {
-                const apiUrl = 'http://192.168.15.24:8082/get-all-groups';
+                const apiUrl = 'http://' + ip + ':8082/get-all-groups';
                 const requestBody = {
                     token: token
                 };
@@ -29,7 +30,7 @@ const HomeScreen = ({navigation}) => {
 
     const addGroup = async (newGroup) => {
         try {
-            const apiUrl = 'http://192.168.15.24:8082/register-group';
+            const apiUrl = 'http://' + ip + ':8082/register-group';
             const requestBody = {
                 owner: newGroup.owner,
                 name: newGroup.groupName,

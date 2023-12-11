@@ -3,6 +3,7 @@ import { Fontisto } from '@expo/vector-icons';
 import styles from './styles/styles.js';
 import React, { useState, useEffect } from 'react';
 import theme from './styles/theme.js';
+import ip from '../ip.js';
 
 const GroupDetailsScreen = ({route, navigation}) => {
     const { groupID, groupName, deleteGroup, groupMembers, username } = route.params;
@@ -60,7 +61,7 @@ const GroupDetailsScreen = ({route, navigation}) => {
 
     const addExpense = async (newExpense) => {
         try {
-            const apiUrl = 'http://192.168.15.24:8083/register-expense'
+            const apiUrl = 'http://'+ ip +':8083/register-expense';
             const requestBody = {
                 payee: newExpense.payee,
                 amout: newExpense.amount,

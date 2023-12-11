@@ -4,6 +4,7 @@ import { View, Text, Pressable } from 'react-native';
 import styles from './styles/styles.js';
 import theme from './styles/theme.js';
 import axios from 'axios';
+import ip from '../ip.js';
 
 const RegisterScreen = ({navigation}) => {
     const [username, setUsername] = useState('')
@@ -16,7 +17,8 @@ const RegisterScreen = ({navigation}) => {
 
     const handleRegister = async () => {
         try {
-            const apiUrl = 'http://192.168.15.24:8081/register-user';
+            const apiUrl = 'http://' + ip + ':8081/register-user';
+            console.log(apiUrl)
 
             // Check for valid fields
             if (
@@ -36,10 +38,9 @@ const RegisterScreen = ({navigation}) => {
                     phone: phone, // Add the actual phone if you collect it in the registration form
                     register_date: new Date().toISOString(),
                 };
-
+                
                 // Make the POST request to register the user
                 const response = await axios.post(apiUrl, requestBody)
-                console.log(response)
 
                 // Handle the registration success or navigate to the login screen
                 console.log('User registered successfully:')
