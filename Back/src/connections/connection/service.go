@@ -41,7 +41,7 @@ func (s *service) GetConnectionsFromUser(ctx context.Context, token string) ([]s
 	// manage the token requests.
 	body, _ := json.Marshal(map[string]string{ "token": token })
     payload := bytes.NewBuffer(body)
-	req, err := http.Post("http://localhost:8081/validate-token", "application/json", payload)
+	req, err := http.Post("http://auth:8080/validate-token", "application/json", payload)
 
 	if err != nil {
 		return nil, err

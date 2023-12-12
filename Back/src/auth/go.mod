@@ -10,6 +10,7 @@ require (
 )
 
 require (
+	github.com/go-kit/log v0.2.0 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/rs/cors v1.10.1 // indirect
 )

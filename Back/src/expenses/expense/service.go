@@ -62,7 +62,7 @@ func (s *service) GetExpensesFromGroup(ctx context.Context, groupID string) ([]m
 func (s *service) GetExpensesFromUser(ctx context.Context, token string) ([]model.Expense, []model.UserDue, error) {
 	body, _ := json.Marshal(map[string]string{ "token": token })
     payload := bytes.NewBuffer(body)
-	req, err := http.Post("http://localhost:8081/validate-token", "application/json", payload)
+	req, err := http.Post("http://auth:8080/validate-token", "application/json", payload)
 
 	if err != nil {
 		return nil, nil, err
