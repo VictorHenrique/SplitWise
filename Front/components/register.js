@@ -43,7 +43,7 @@ const RegisterScreen = ({navigation}) => {
                 const response = await axios.post(apiUrl, requestBody)
 
                 // Handle the registration success or navigate to the login screen
-                console.log('User registered successfully:')
+                console.log('User registered successfully:');
                 navigation.navigate('Login');
             } else {
                 alert('Invalid Fields');

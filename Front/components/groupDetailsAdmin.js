@@ -4,9 +4,11 @@ import styles from './styles/styles.js';
 import theme from './styles/theme.js';
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ip from '../ip.js';
+import axios from 'axios';
 
 const GroupDetailsAdminScreen = ({route, navigation}) => {
-    const { groupName, deleteGroup, groupMembers, username } = route.params;
+    const { groupName, deleteGroup, groupMembers, username, groupID, owner, token } = route.params;
     const [groupExpenses, setGroupExpenses] = useState([]);
     const [userExpenses, setUserExpenses] = useState([]);
     const [isExpenseOpen, setIsExpenseOpen] = useState({});
@@ -14,18 +16,11 @@ const GroupDetailsAdminScreen = ({route, navigation}) => {
     useEffect(() => {
         const fetchExpenses = async () => {
             try {
-                // Recupera as despesas do AsyncStorage quando a tela é montada
-                const expensesJSON = await AsyncStorage.getItem('expenses');
-                const expenses = expensesJSON ? JSON.parse(expensesJSON) : {};
-
-                // console.log('expenses')
-                // console.log(expenses[groupName])
-                // console.log('groupName',groupName);
-
-                // Define as despesas no estado local
-                setGroupExpenses(expenses[groupName] || []);
+                const apiUrl = 'http://' + ip + ':8083/get-all-expenses-from-group';
+                const response = await axios.get(apiUrl, { params: { id: groupID } });
+                setGroupExpenses(response.data.expenses || []);
             } catch (error) {
-                console.error('Erro ao obter despesas do AsyncStorage: ', error);
+                console.error('Error fetching expenses', error);
             }
         };
 
@@ -70,6 +65,8 @@ const GroupDetailsAdminScreen = ({route, navigation}) => {
 
     const addExpense = async (newExpense) => {
         try {
+            const apiUrl = 'http://' + ip + ':8083/register-expense';
+
             // Obtém as despesas atuais do AsyncStorage (se houver)
             const existingExpensesJSON = await AsyncStorage.getItem('expenses');
             let existingExpenses = existingExpensesJSON ? JSON.parse(existingExpensesJSON) : {};
@@ -85,13 +82,24 @@ const GroupDetailsAdminScreen = ({route, navigation}) => {
                 existingExpenses[groupName] = [];
             }
 
+            const requestBody = {
+                debtors_usernames: newExpense.expense_members,
+                amount: newExpense.amount,
+                title: newExpense.name,
+                group_id: groupID,
+                payee: owner,
+                pay_date: new Date().toISOString(),
+                description: "lorem ipsum dolor sit amet",
+            }
+
+            const response = await axios.post(apiUrl, requestBody);
+            console.log('Expense successfully added');
+
             // Adiciona a nova despesa à lista de despesas do grupo
             existingExpenses[groupName].push(newExpense);
 
             // Salva a lista atualizada de despesas no AsyncStorage
             await AsyncStorage.setItem('expenses', JSON.stringify(existingExpenses));
-
-            // console.log(existingExpenses);
 
             // Volta para a tela anterior
             navigation.goBack();
@@ -130,7 +138,7 @@ const GroupDetailsAdminScreen = ({route, navigation}) => {
             {userExpenses.length === 0 ? (
                 <Text style={styles.noExpenses}>Any expense available.</Text>
             ) : (
-                userExpenses.map((expense) => {(
+                userExpenses.map((expense) => (
                     <View key={expense.id}>
                         <Pressable
                             style={styles.expenseDetailButton}
@@ -141,19 +149,17 @@ const GroupDetailsAdminScreen = ({route, navigation}) => {
                                 }));
                             }}
                         >
-                            <Text style={styles.createGroupButtonText}>{expense.name}</Text>
+                            <Text style={styles.createGroupButtonText}>{expense.title}</Text>
                         </Pressable>
                         {isExpenseOpen[expense.id] && (
                             <View>
-                                <Text style={styles.titleExpense}>Expense Details:</Text>
-                                <Text style={styles.fieldExpense}>Name: {expense.name}</Text>
+                                <Text style={styles.titleExpense}>Expense Details: {expense.description}</Text>
+                                <Text style={styles.fieldExpense}>Name: {expense.title}</Text>
                                 <Text style={styles.fieldExpense}>Total Value: ${expense.amount}</Text>
-                                <Text style={styles.fieldExpense}>Value to pay: ${calculateUserShare(expense)}</Text>
-                                {/* <Text style={styles.fieldExpense}>Members: {expense.members.join(',')}</Text> */}
                             </View>
                         )}
                     </View>
-                )})
+                ))
             )}
 
             <Text style={styles.totalGroupExpenses}>Total Group Expenses: ${calculateTotalExpenses()}</Text>

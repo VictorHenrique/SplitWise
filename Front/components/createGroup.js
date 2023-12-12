@@ -39,6 +39,7 @@ const CreateGroupScreen = ({navigation}) => {
         }
 
         addGroup(newGroup);
+        console.log(newGroup.members);
         navigation.goBack();
     };
 
