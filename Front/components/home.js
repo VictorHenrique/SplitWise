@@ -36,6 +36,7 @@ const HomeScreen = ({navigation}) => {
                 name: newGroup.groupName,
                 members_usernames: newGroup.members
             };
+            
             const response = await axios.post(apiUrl, requestBody);
             const newGroupAdded = {
                 id: response.data.id,
@@ -53,7 +54,7 @@ const HomeScreen = ({navigation}) => {
 
     const deleteGroup = async (groupId, groupOwner) => {
         try {
-            const apiUrl = 'http://192.168.15.24:8082/delete-group'
+            const apiUrl = 'http://' + ip + ':8082/delete-group'
             const requestBody = {
                 id: groupId,
                 username: groupOwner
@@ -72,17 +73,21 @@ const HomeScreen = ({navigation}) => {
             navigation.navigate('GroupDetailsAdmin', {
                 groupID: group.id,
                 groupName: group.name,
+                owner: group.owner,
                 deleteGroup: () => deleteGroup(group.id, owner),
-                groupMembers: group.members,
-                username: username
+                groupMembers: group.members_usernames,
+                username: username,
+                token
             });
         } else {
             navigation.navigate('GroupDetails', {
                 groupID: group.id,
                 groupName: group.name,
-                deleteGroup: () => deleteGroup(group.id, owner),
-                groupMembers: group.members,
-                username: username
+                owner: group.owner,
+                // deleteGroup: () => deleteGroup(group.id, owner),
+                groupMembers: group.members_usernames,
+                username: username,
+                token
             });
         }
     };

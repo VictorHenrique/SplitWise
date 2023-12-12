@@ -11,13 +11,14 @@ const SearchBar = ({list, chosen, setChosen}) => {
     const profilePicSize = 30;
     const dummyPic = 'https://thispersondoesnotexist.com/';
     
-    
     let listWithIds = [];
-    for (const [index, item] of list.entries()) {
-        listWithIds.push({
-            "key": index,
-            "value": item
-        });    
+    if (list) {
+        for (const [index, item] of list.entries()) {
+            listWithIds.push({
+                "key": index,
+                "value": item
+            });    
+        }
     }
 
     const handleFocus = () => {

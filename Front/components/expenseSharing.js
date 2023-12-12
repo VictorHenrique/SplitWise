@@ -9,8 +9,10 @@ const ExpenseSharing = ({type, setType, total, members, groupMembers, sharings, 
     const profilePicSize = 40;
     const dummyPic = 'https://thispersondoesnotexist.com/';
     const defaultValues = [];
-    for (const item of groupMembers.values()) {
-        defaultValues.push(parseFloat(0).toFixed(2));    
+    if (groupMembers) {
+        for (const item of groupMembers.values()) {
+            defaultValues.push(parseFloat(0).toFixed(2));    
+        }
     }
 
     const handleSplitEqually = () => {
