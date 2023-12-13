@@ -28,16 +28,18 @@ const CreateGroupScreen = ({navigation}) => {
 
     const handleSubmit = () => {
         const newGroup = {
-            groupName: groupName, 
+            owner: username,
+            groupName: groupName,
             members: Object.values(members)
         };
-        
+
         if (groupName === '') {
             alert('Nome do grupo invalido');
             return;
         }
 
         addGroup(newGroup);
+        console.log(newGroup.members);
         navigation.goBack();
     };
 

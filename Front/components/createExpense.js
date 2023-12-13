@@ -66,13 +66,10 @@ const CreateExpenseScreen = ({route, navigation}) => {
         });
 
         const newExpense = {
-            id: generateUniqueId(),
             name: expenseName,
             amount: amount,
-            members: [...users],
-            individualPayments: paymentsPerUser,
+            expense_members: [...users],
         };
-
 
         addExpense(newExpense);
 

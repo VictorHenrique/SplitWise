@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	host     = "localhost"
+	host     = "db"
 	port     = 5432
 	user     = "postgres"
 	password = "admin"
@@ -119,7 +119,7 @@ func (r *Repository) GetAllExpensesFromGroup(ctx context.Context, groupID string
 func (r *Repository) GetAllExpensesFromUser(ctx context.Context, username string) ([]model.Expense, []model.UserDue, error) {
 	query := `
 		SELECT
-			e.id, e.payee,
+			e.id, e.payee, e.amount,
 			e.pay_date, e.description, e.title, e.group_id,
 			ud.is_payed, ud.amount AS due_amount
 		FROM
@@ -142,6 +142,7 @@ func (r *Repository) GetAllExpensesFromUser(ctx context.Context, username string
 		err := rows.Scan(
 			&expense.ID,
 			&expense.Payee,
+			&expense.Amount,
 			&expense.PayDate,
 			&expense.Description,
 			&expense.Title,
@@ -149,6 +150,7 @@ func (r *Repository) GetAllExpensesFromUser(ctx context.Context, username string
 			&userDue.IsPayed,
 			&userDue.Amount,
 		)
+
 		userDue.Username = username
 		userDue.ExpenseID = expense.ID
 

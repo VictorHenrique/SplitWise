@@ -54,7 +54,7 @@ func (s *service) GetGroupByID(ctx context.Context, groupID string) (*model.Grou
 func (s *service) GetGroupsFromUser(ctx context.Context, token string) ([]model.Group, error) {
 	body, _ := json.Marshal(map[string]string{ "token": token })
     payload := bytes.NewBuffer(body)
-	req, err := http.Post("http://localhost:8081/validate-token", "application/json", payload)
+	req, err := http.Post("http://auth:8080/validate-token", "application/json", payload)
 
 	if err != nil {
 		return nil, err

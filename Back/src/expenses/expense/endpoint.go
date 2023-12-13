@@ -20,15 +20,16 @@ type registerExpenseRequest struct {
 }
 
 type registerExpenseResponse struct {
-	Err string `json:"err,omitempty"` // errors don't JSON-marshal, so we use a string
+	ID string `json:"id"` // errors don't JSON-marshal, so we use a string
 }
 
 func MakeRegisterExpenseEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request any) (any, error) {
 		req := request.(registerExpenseRequest)
 
+        expenseID := uuid.New().String()
 		createdExpense := model.Expense{
-			ID:          uuid.New().String(),
+			ID:          expenseID,
 			Payee:       req.Payee,
 			Amount:      req.Amount,
 			PayDate:     req.PayDate,
@@ -38,9 +39,9 @@ func MakeRegisterExpenseEndpoint(svc Service) endpoint.Endpoint {
 		}
 
 		if err := svc.RegisterExpense(ctx, &createdExpense, req.DebtorsUsernames); err != nil {
-			return registerExpenseResponse{err.Error()}, err
+			return registerExpenseResponse{""}, err
 		}
-		return registerExpenseResponse{"Sucess"}, nil
+		return registerExpenseResponse{expenseID}, nil
 	}
 }
 

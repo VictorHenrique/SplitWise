@@ -9,9 +9,10 @@ import (
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
+    "github.com/rs/cors"
 )
 
-func NewHttpServer(svc Service, logger kitlog.Logger) *mux.Router {
+func NewHttpServer(svc Service, logger kitlog.Logger) http.Handler {
 	options := []kithttp.ServerOption{
 		kithttp.ServerErrorHandler(transport.NewLogErrorHandler(logger)),
 		kithttp.ServerErrorEncoder(encodeErrorResponse),
@@ -44,7 +45,15 @@ func NewHttpServer(svc Service, logger kitlog.Logger) *mux.Router {
 	r.Methods("POST").Path("/login-user").Handler(loginUserHandler)
 	r.Methods("POST").Path("/validate-token").Handler(validateTokenHandler)
 
-	return r
+    // Use cors.New() to create a new CORS middleware
+    c := cors.New(cors.Options{
+        AllowedOrigins: []string{"*"},     // Adjust this based on your requirements
+        AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+        AllowedHeaders: []string{"*"},
+        AllowCredentials: true,
+    })
+
+	return c.Handler(r)
 }
 
 func newServerFinalizer(logger kitlog.Logger) kithttp.ServerFinalizerFunc {

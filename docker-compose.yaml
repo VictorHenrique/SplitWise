@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  auth:
+    build: ./Back/src/auth
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+
+  connections:
+    build: ./Back/src/connections
+    ports:
+      - "8084:8080"
+    depends_on:
+      - db
+
+  expenses:
+    build: ./Back/src/expenses
+    ports:
+      - "8083:8080"
+    depends_on:
+      - db
+
+  groups:
+    build: ./Back/src/groups
+    ports:
+      - "8082:8080"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: split_wise
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./db/sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
