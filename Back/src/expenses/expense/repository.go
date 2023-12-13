@@ -151,12 +151,6 @@ func (r *Repository) GetAllExpensesFromUser(ctx context.Context, username string
 			&userDue.Amount,
 		)
 
-	{
-		[despesa1 (grupo1, valor1, usuário1), despesa2 (grupo1, valor2, usuário1), despesa3 (grupo1, valor2, usuário2)]
-		[user_due1 (despesa1, valorx, usuário2), user_due2 (despesa1, valory, usuário2), user_due3 (despesa2, valorz, usuário2)]
-	}	
-
-
 		userDue.Username = username
 		userDue.ExpenseID = expense.ID
 

@@ -11,7 +11,7 @@ services:
   connections:
     build: ./Back/src/connections
     ports:
-      - "8082:8080"
+      - "8084:8080"
     depends_on:
       - db
 
@@ -25,10 +25,10 @@ services:
   groups:
     build: ./Back/src/groups
     ports:
-      - "8084:8080"
+      - "8082:8080"
     depends_on:
       - db
-      
+
   db:
     image: postgres:latest
     environment:

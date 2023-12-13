@@ -9,7 +9,4 @@ require (
 	github.com/lib/pq v1.10.9
 )
 
-require (
-	github.com/go-logfmt/logfmt v0.5.1 // indirect
-	github.com/google/uuid v1.4.0 // indirect
-)
+require github.com/go-logfmt/logfmt v0.5.1 // indirect
